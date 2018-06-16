@@ -25,7 +25,6 @@ public class PageEntity implements IGuiSwordPage {
 	private GuiEntityScrollingList entityScrollingList;
 	private SwordKillsHelper.EntityType activeEntityType = SwordKillsHelper.EntityType.MONSTER;
 	private int screenWidth, screenHeight;
-	private boolean showAll = false;
 	//private final ItemStack iconItemStack;
 	
 	public PageEntity( final Set<String> entityStrings, CreativeTabs inferedCreativeTab,
@@ -50,7 +49,7 @@ public class PageEntity implements IGuiSwordPage {
 		}
 		entityScrollingList = new GuiEntityScrollingList(
 				GuiSwordParent.X_SIZE, GuiSwordParent.Y_SIZE, screenWidth, screenHeight,
-				swordKillsHelper, entityStrings, !showAll
+				swordKillsHelper, entityStrings
 		);
 		
 	}
@@ -72,7 +71,7 @@ public class PageEntity implements IGuiSwordPage {
 		}
 		entityScrollingList = new GuiEntityScrollingList(
 				GuiSwordParent.X_SIZE, GuiSwordParent.Y_SIZE, screenWidth, screenHeight,
-				swordKillsHelper, chosenEntityStringSet, !showAll
+				swordKillsHelper, chosenEntityStringSet
 		);
 	}
 	
@@ -148,20 +147,19 @@ public class PageEntity implements IGuiSwordPage {
 				buttonStartIndex + 3,
 				screenWidth / 2 - GuiSwordParent.X_SIZE / 2 + monsterWidth + bossWidth + xOffset + spacing * 2 - (showAllWidth - passiveWidth),
 				(screenHeight / 2 + GuiSwordParent.Y_SIZE / 2 - 25),
-				showAllWidth, buttonHeight, "Show: " + (( showAll )? "all" : "kills") 
+				showAllWidth, buttonHeight, "Show: " + (( GuiEntityScrollingList.getUseFiltered() )? "kills" : "all") 
 		));
 		return buttons;
 	}
 	
 	public boolean getShowAll() {
 		
-		return showAll;
+		return !GuiEntityScrollingList.getUseFiltered();
 	}
 	
-	public void setShowAll( boolean showAll ){
+	public void setShowAll( boolean showAll ) {
 		
-		this.showAll = showAll;
-		this.entityScrollingList.setUseFiltered(!showAll);
+		GuiEntityScrollingList.setUseFiltered(!showAll);
 	}
 	
 	public void setCurrentEntityType( SwordKillsHelper.EntityType entityType ) {

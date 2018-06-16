@@ -29,11 +29,13 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 	private TreeSet<String> entityStrings;
 	private TreeSet<String> filteredEntityStrings;
 	private final SwordKillsHelper swordKillsHelper;
-	private boolean useFiltered;
+	// Made static for user convenience
+	/** True if only kills are to be shown, false otherwise.*/
+	private static boolean useFiltered = true;
 	
 
 	public GuiEntityScrollingList( int parentWidth, int parentHeight, int screenWidth, int screenHeight,
-			SwordKillsHelper swordKillsHelper, Set<String> entityStrings, boolean useFiltered ) {
+			SwordKillsHelper swordKillsHelper, Set<String> entityStrings) {
 		
 		super(
 				Minecraft.getMinecraft(), 
@@ -51,7 +53,6 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 		);
 		this.swordKillsHelper = swordKillsHelper;
 		this.entityStrings = new TreeSet<String>(entityStrings);
-		this.useFiltered = useFiltered;
 		//Filter out the entities with no kills.
 		filteredEntityStrings = new TreeSet<String>();
 		for ( String entityString : entityStrings ){
@@ -87,9 +88,14 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 		//parent.drawDefaultBackground();
 	}
 	
-	public void setUseFiltered( boolean useFiltered ) {
+	public static boolean getUseFiltered() {
 		
-		this.useFiltered = useFiltered;
+		return GuiEntityScrollingList.useFiltered;
+	}
+	
+	public static void setUseFiltered( boolean useFiltered ) {
+		
+		GuiEntityScrollingList.useFiltered = useFiltered;
 	}
 	
 	@Override
