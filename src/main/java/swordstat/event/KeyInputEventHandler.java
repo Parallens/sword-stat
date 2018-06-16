@@ -26,7 +26,7 @@ public class KeyInputEventHandler {
 			// We want no container so we call it on the client side only.
 			if ( player.world.isRemote ){
 				player.openGui(
-						Main.instance, GuiEnum.SWORD_MENU2.ordinal(), player.world, 0, 0, 0
+						Main.instance, GuiEnum.SWORD_MENU.ordinal(), player.world, 0, 0, 0
 				);
 			}
 

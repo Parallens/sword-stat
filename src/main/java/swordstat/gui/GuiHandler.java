@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import swordstat.Main;
-import swordstat.gui2.GuiSwordParent;
 import swordstat.util.EntityHelper;
 import swordstat.util.swordutil.SwordDataHelper;
 import swordstat.util.swordutil.SwordKillsHelper;
@@ -23,13 +22,6 @@ public class GuiHandler implements IGuiHandler {
           World world, 
           int x, int y, int z) {
 		
-		//System.out.println("called server");
-		
-		/*
-        if ( ID == GuiEnum.SWORD_MENU.ordinal() ){
-            return new ContainerSwordMenu(player.inventory, world, x, y, z);
-        }
-		*/
         return null;
     }
 
@@ -51,9 +43,6 @@ public class GuiHandler implements IGuiHandler {
 		SwordDataHelper swordDataHelper = new SwordDataHelper(sword, player);
 		SwordKillsHelper swordKillsHelper = new SwordKillsHelper(sword.getTagCompound().getCompoundTag(Main.MODID), entityHandler);
 		if ( ID == GuiEnum.SWORD_MENU.ordinal() ){
-            return new GuiSwordMenu(player.inventory, world, swordDataHelper, swordKillsHelper);
-        }
-		else if ( ID == GuiEnum.SWORD_MENU2.ordinal() ){
 			return new GuiSwordParent(world, swordDataHelper, swordKillsHelper);
 		}
 		return null;

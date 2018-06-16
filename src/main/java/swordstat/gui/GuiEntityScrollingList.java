@@ -1,10 +1,12 @@
 package swordstat.gui;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.Set;
+import java.util.TreeSet;
 
+import swordstat.Main;
 import swordstat.util.RenderUtil;
 import swordstat.util.StringUtil;
+import swordstat.util.swordutil.SwordKillsHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -17,49 +19,44 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.GuiScrollingList;
 
-public class GuiSlotEntityList extends GuiScrollingList {
+public class GuiEntityScrollingList extends GuiScrollingList {
 	
-	private GuiSwordMenu parent;
-	private Map<String, Class<? extends Entity>> killMapping;
-	private int[] kills;
+	private static final int SLOT_HEIGHT = 80;
+	private static final int MAX_WIDTH = 53;
+	private static final int MAX_HEIGHT = 64;
+	
 	private float oldMouseX, oldMouseY;
-	// Would it be better if these were fibonacci numbers?
-	private final int maxWidth = 53;
-	private final int maxHeight = 64;
+	private TreeSet<String> entityStrings;
+	private TreeSet<String> filteredEntityStrings;
+	private final SwordKillsHelper swordKillsHelper;
+	private boolean useFiltered;
+	
 
-	public GuiSlotEntityList( GuiSwordMenu parent, int listWidth,
-			int slotHeight, int[] killsIn,
-			Map<String, Class<? extends Entity>> killMappingIn ) {
+	public GuiEntityScrollingList( int parentWidth, int parentHeight, int screenWidth, int screenHeight,
+			SwordKillsHelper swordKillsHelper, Set<String> entityStrings, boolean useFiltered ) {
 		
 		super(
-				parent.getMinecraftInstance(), 
-				listWidth,				 // Width of the scrolling list?
-				parent.height,			 // Height of the scrolling list
+				Minecraft.getMinecraft(), 
+				parentWidth - 20,				 // Width of the scrolling list?
+				screenHeight,			 // Height of the scrolling list
 				// Top of the menu?
-				parent.height / 2 - parent.getYSize() / 2 + 30,
+				screenHeight / 2 - parentHeight / 2 + 30,
 				// Bottom of the menu?
-				parent.height / 2 - parent.getYSize() / 2 + parent.getYSize() - 30,
+				screenHeight / 2 - parentHeight / 2 + parentHeight - 30,
 				// How far to the left in pixels to start?
-				parent.width / 2 - parent.getXSize() / 2 + 10,
-				slotHeight, 			 // Height of an individual slot?
-				parent.getXSize(), 		 // Seems to be width of GUI
-				parent.getYSize()		 // Seems to be height of GUI
+				screenWidth / 2 - parentWidth / 2 + 10,
+				SLOT_HEIGHT, 		 // Height of an individual slot?
+				parentWidth, 		 // Seems to be width of GUI
+				parentHeight		 // Seems to be height of GUI
 		);
-		this.parent = parent;
-		killMapping = new TreeMap<String, Class<? extends Entity>>();
-		
+		this.swordKillsHelper = swordKillsHelper;
+		this.entityStrings = new TreeSet<String>(entityStrings);
+		this.useFiltered = useFiltered;
 		//Filter out the entities with no kills.
-		for ( int i = 0; i < killMappingIn.size(); i++ ){
-			if ( killsIn[i] != 0 ){
-				String str = (String) killMappingIn.keySet().toArray()[i];
-				killMapping.put(str, killMappingIn.get(str));
-			}
-		}
-		kills = new int[killMapping.size()];
-		for ( int j = 0, k = 0; j < killMappingIn.size(); j++ ){
-			if ( killsIn[j] != 0 ){
-				kills[k] = killsIn[j];
-				k++;
+		filteredEntityStrings = new TreeSet<String>();
+		for ( String entityString : entityStrings ){
+			if ( swordKillsHelper.getEntityKillsFromString(entityString) != 0 ){
+				filteredEntityStrings.add(entityString);
 			}
 		}
 	}
@@ -67,7 +64,7 @@ public class GuiSlotEntityList extends GuiScrollingList {
 	@Override
 	protected int getSize() {
 
-		return kills.length;
+		return ( useFiltered )? filteredEntityStrings.size() : entityStrings.size();
 	}
 	
 	@Override
@@ -79,12 +76,7 @@ public class GuiSlotEntityList extends GuiScrollingList {
 	}
 	
 	@Override
-	protected void elementClicked( int index, boolean doubleClick ) {
-		
-	}
-
-	@Override
-	protected boolean isSelected(int index) {
+	protected boolean isSelected( int index ) {
 
 		return false;
 	}
@@ -95,21 +87,23 @@ public class GuiSlotEntityList extends GuiScrollingList {
 		//parent.drawDefaultBackground();
 	}
 	
+	public void setUseFiltered( boolean useFiltered ) {
+		
+		this.useFiltered = useFiltered;
+	}
+	
 	@Override
 	protected void drawSlot( int slotIdx, int entryRight, int slotTop,
 			int slotBuffer, Tessellator tess ) {
 		
-		String title = (String) killMapping.keySet().toArray()[slotIdx];
-		Class<? extends Entity> entityClass = killMapping.get(title);
-		FontRenderer font = parent.getFontRenderer();
-		int kill = kills[slotIdx];
+		Set<String> stringSet = ( useFiltered )? filteredEntityStrings : entityStrings;
+		String entityString = (String) stringSet.toArray()[slotIdx];
+		int kill = swordKillsHelper.getEntityKillsFromString(entityString);
 		GlStateManager.color(1, 1, 1, 1);
 	    GlStateManager.pushMatrix();
-	    Minecraft.getMinecraft().getTextureManager().bindTexture(
-				new ResourceLocation(
+	    Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(
 						"paras_sword_stat:textures/gui/entity_slot.png"
-				)
-		);
+		));
 	    // Current dimensions are (155, 80)
 
 	    Gui.drawModalRectWithCustomSizedTexture(
@@ -126,20 +120,21 @@ public class GuiSlotEntityList extends GuiScrollingList {
 	    		256F, 256F
 	    );
 	    // Render the entity:
+	    Class<? extends Entity> entityClass = swordKillsHelper.getEntityClassFromString(entityString);
 	    Entity entity = null;
 		try {
 			entity = entityClass.getConstructor(World.class).
-					newInstance(parent.getPlayer().world);
+					newInstance(Minecraft.getMinecraft().player.world);
 		} catch (Exception e) {
 			// Should never prompt an exception as we try to instantiate
 			// each entity like this in the entityHandler
-			e.printStackTrace();
+			Main.logger.error("Could not initialise entity before rendering it, this should not happen!");
 		}
 		int scale = RenderUtil.getScale(
-				(EntityLivingBase) entity, maxWidth, maxHeight
+				(EntityLivingBase) entity, MAX_WIDTH, MAX_HEIGHT
 		);
 		int yRender = RenderUtil.getRenderY(
-				(EntityLivingBase) entity, scale, maxWidth, maxHeight
+				(EntityLivingBase) entity, scale, MAX_WIDTH, MAX_HEIGHT
 		);
 		// (9, 8) , (60, 72) -> average = (34, 40)
 		if ( entity instanceof EntityDragon ){
@@ -148,7 +143,7 @@ public class GuiSlotEntityList extends GuiScrollingList {
 			GlStateManager.popMatrix();
 		}
 		RenderUtil.drawEntityOnScreen(
-				left + 8 + (maxWidth + 1) / 2,
+				left + 8 + (MAX_WIDTH + 1) / 2,
 				slotTop + 8 + yRender, scale,
 				(float) (left + 51) - oldMouseX,
 				(float) (slotTop + 75 - 50) - oldMouseY,
@@ -160,38 +155,42 @@ public class GuiSlotEntityList extends GuiScrollingList {
 			GlStateManager.popMatrix();
 		}
 	    // Draw some of the additional information
-	    font.drawString(
+		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+	    fontRenderer.drawString(
 	    		entity.getName(), //StringManips.getNeaterName(title),
 	    		left + 67 + 3,
 	    		slotTop + 15, 0
 	    );
-	    font.drawString(
+	    fontRenderer.drawString(
 	    		"Kills: ",
 	    		left + 67 + 3,
 	    		slotTop + 35, 0xFFFFFF
 	    );
-	    font.drawString(
+	    fontRenderer.drawString(
 	    		Integer.toString(kill),
-	    		left + 67 + 3 + font.getStringWidth("kills: "),
+	    		left + 67 + 3 + fontRenderer.getStringWidth("kills: "),
 	    		slotTop + 35, StringUtil.getKillColour(kill)
 	    );
-	    float total = (float)parent.getSwordData().getTotalKills();
+	    float total = (float)swordKillsHelper.getTotalKills();
 	    float percent = ( total > 0 )? (float)kill / total * 100 : 0F;
 	    
 	    
-	    font.drawString(
+	    fontRenderer.drawString(
 	    		StringUtil.getTruncFloat(percent) + "%",
 	    		left + 67 + 3,
 	    		slotTop + 48, 0xDF0000
 	    );
-	    font.drawString(
+	    fontRenderer.drawString(
 	    		" of total",
-	    		left + 67 + 3 + font.getStringWidth(
+	    		left + 67 + 3 + fontRenderer.getStringWidth(
 	    				StringUtil.getTruncFloat(percent) + "%"),
 	    		slotTop + 48, 0xFFFFFF
 	    );
 	    
 	    GlStateManager.popMatrix();
 	}
+
+	@Override
+	protected void elementClicked( int index, boolean doubleClick ) {}
 	
 }

@@ -1,4 +1,4 @@
-package swordstat.gui2;
+package swordstat.gui;
 
 import java.util.List;
 
