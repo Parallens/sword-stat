@@ -20,24 +20,19 @@ public class LivingDeathEventHandler {
 	@SubscribeEvent(priority=EventPriority.LOW)
 	public void onEvent( LivingDeathEvent event ) {
 		
-		
 		EntityPlayer player;
 		ItemStack sword;
-		/*
-		 * Not interested if its not a player kill or the player is not
-		 * using a sword. 
-		 */
+		// Not interested if its not a player kill or the player is not using a sword
 		if ( 
-				! (event.getEntity() instanceof EntityPlayer) ||
-				! (((EntityPlayer) event.getEntity())
+				! (event.getSource().getTrueSource() instanceof EntityPlayer) ||
+				! (((EntityPlayer) event.getSource().getTrueSource())
 				.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND)
 				.getItem() instanceof ItemSword)
 			){
 			return;
 		}
 
-		System.out.println("Checking for player");
-		player = (EntityPlayer) event.getEntity();
+		player = (EntityPlayer) event.getSource().getTrueSource();
 		sword = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
 		entityHandler = new EntityHelper(player.world);
 		// Check if it has NBT here & give it NBT
@@ -66,10 +61,9 @@ public class LivingDeathEventHandler {
 			attachmentHandler.incNBTData(
 					sword, SwordDataEnum.PASSIVE_KILLS, entityClass
 			);
-			System.out.println("Found in passive map");
 		}
 		else {
-			System.out.println("No matching map found for:" + entityClass);
+
 		}
 		
 		
