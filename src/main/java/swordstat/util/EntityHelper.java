@@ -28,7 +28,6 @@ public final class EntityHelper {
 		bossMap = new TreeMap<String, Class<? extends Entity>>();
 		monsterMap = new TreeMap<String, Class<? extends Entity>>();
 		passiveMap = new TreeMap<String, Class<? extends Entity>>();
-		//We need to sort the mappings as well!
 		for ( EntityEntry entry : entities ){
 			Class<? extends Entity> entityClass = entry.getEntityClass();
 			/*
