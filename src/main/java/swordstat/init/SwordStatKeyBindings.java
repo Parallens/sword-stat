@@ -9,16 +9,11 @@ public class SwordStatKeyBindings {
 
 
 	public static KeyBinding swordMenu;
-	public static KeyBinding swordMenu2;
 	
 	public static void init() {
-		/*
-		swordMenu = new KeyBinding(
-				"key.swordMenu", Keyboard.KEY_Z, "key.categories.swordstat"
-		);*/
-		swordMenu2 = new KeyBinding("key.swordMenu2", Keyboard.KEY_X, "key.categories.swordstat");
+
+		swordMenu = new KeyBinding("key.swordMenu", Keyboard.KEY_Z, "key.categories.swordstat");
 		
-	    //ClientRegistry.registerKeyBinding(swordMenu);
-	    ClientRegistry.registerKeyBinding(swordMenu2);
+	    ClientRegistry.registerKeyBinding(swordMenu);
 	}
 }

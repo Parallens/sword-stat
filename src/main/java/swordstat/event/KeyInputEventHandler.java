@@ -18,31 +18,7 @@ public class KeyInputEventHandler {
 	@SubscribeEvent(priority=EventPriority.LOW)
 	public void onKeyInput( InputEvent.KeyInputEvent event ) {
 		
-		/*
 		if ( SwordStatKeyBindings.swordMenu.isPressed() ){
-			// Get the player.
-			EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-			// Check if the player is holding a sword in the mainhand.
-			ItemStack itemStack = 
-					player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND); 
-			if ( itemStack == null || ! (itemStack.getItem() instanceof ItemSword) )
-				return;
-			// We want no container so we call it on the client side only.
-			if ( player.worldObj.isRemote ){
-				player.openGui(
-						Main.instance, 
-						GuiEnum.SWORD_MENU.ordinal(),
-						player.worldObj,
-						0, 0, 0
-				);
-			}
-			
-			//Main.proxy.network.sendToServer(new OpenSwordMenuMessage("HI"));
-		}
-		*/
-		
-		if ( SwordStatKeyBindings.swordMenu2.isPressed() ){
-			// Get the player.
 			EntityPlayer player = Minecraft.getMinecraft().player;
 			// Check if the player is holding a sword in the mainhand.
 			ItemStack itemStack = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND); 
@@ -53,9 +29,7 @@ public class KeyInputEventHandler {
 						Main.instance, GuiEnum.SWORD_MENU2.ordinal(), player.world, 0, 0, 0
 				);
 			}
-			/*
-			Main.proxy.network.sendToServer(new OpenSwordMenuMessage("HI"));
-			*/
+
 		}
 	}
 }

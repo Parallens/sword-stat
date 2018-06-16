@@ -36,6 +36,7 @@ public class LivingDeathEventHandler {
 			return;
 		}
 
+		System.out.println("Checking for player");
 		player = (EntityPlayer) event.getEntity();
 		sword = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
 		entityHandler = new EntityHelper(player.world);
@@ -65,6 +66,10 @@ public class LivingDeathEventHandler {
 			attachmentHandler.incNBTData(
 					sword, SwordDataEnum.PASSIVE_KILLS, entityClass
 			);
+			System.out.println("Found in passive map");
+		}
+		else {
+			System.out.println("No matching map found for:" + entityClass);
 		}
 		
 		
