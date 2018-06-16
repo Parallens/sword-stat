@@ -1,12 +1,10 @@
 package swordstat.gui;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import swordstat.Main;
-import swordstat.util.RenderUtil;
-import swordstat.util.StringUtil;
-import swordstat.util.swordutil.SwordKillsHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -18,12 +16,18 @@ import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.GuiScrollingList;
+import swordstat.Main;
+import swordstat.util.RenderUtil;
+import swordstat.util.StringUtil;
+import swordstat.util.swordutil.SwordKillsHelper;
 
 public class GuiEntityScrollingList extends GuiScrollingList {
 	
 	private static final int SLOT_HEIGHT = 80;
 	private static final int MAX_WIDTH = 53;
 	private static final int MAX_HEIGHT = 64;
+	/** Cache of entities so we aren't creating a new entity on every call.*/
+	private static Map<String, Entity> entityCache = new HashMap<>();
 	
 	private float oldMouseX, oldMouseY;
 	private TreeSet<String> entityStrings;
@@ -125,17 +129,21 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 	    		listWidth, 5,
 	    		256F, 256F
 	    );
+	    
+	    if ( !entityCache.containsKey(entityString) ){
+	    	Class<? extends Entity> entityClass = swordKillsHelper.getEntityClassFromString(entityString);
+			try {
+				entityCache.put(entityString, entityClass.getConstructor(World.class).
+						newInstance(Minecraft.getMinecraft().player.world));
+			} catch (Exception e) {
+				// Should never happen, each entity is instantiated like this in the entityHandler
+				Main.logger.error("Could not initialise entity before rendering it, this should not happen!");
+				return;
+			}
+	    }
+	    Entity entity = entityCache.get(entityString);
 	    // Render the entity:
-	    Class<? extends Entity> entityClass = swordKillsHelper.getEntityClassFromString(entityString);
-	    Entity entity = null;
-		try {
-			entity = entityClass.getConstructor(World.class).
-					newInstance(Minecraft.getMinecraft().player.world);
-		} catch (Exception e) {
-			// Should never prompt an exception as we try to instantiate
-			// each entity like this in the entityHandler
-			Main.logger.error("Could not initialise entity before rendering it, this should not happen!");
-		}
+
 		int scale = RenderUtil.getScale(
 				(EntityLivingBase) entity, MAX_WIDTH, MAX_HEIGHT
 		);
