@@ -13,12 +13,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-@Mod(modid = Main.MODID, name = Main.MODNAME, version = Main.VERSION)
+@Mod(modid = Main.MODID, name = Main.MODNAME, version = Main.VERSION, acceptedMinecraftVersions = "[1.12.2]")
 public class Main {
 	
 	public static final String MODID = "paras_sword_stat";
 	public static final String MODNAME = "Para's Sword Stat";
-	public static final String VERSION = "0.1.0";
+	public static final String VERSION = "0.1.2";
 	public static final Logger logger = LogManager.getLogger(MODNAME);
 	
 	@Instance(MODID)
