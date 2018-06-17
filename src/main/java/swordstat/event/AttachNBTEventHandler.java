@@ -36,7 +36,7 @@ public class AttachNBTEventHandler {
 	@SubscribeEvent
 	public void onEvent( PlayerEvent.ItemCraftedEvent event ) {
 		
-		if ( event.crafting.getItem() instanceof ItemSword ){
+		if ( event.crafting.getItem() instanceof ItemSword && !event.player.getEntityWorld().isRemote ){
 			attachNBT(event.crafting, event.player.getEntityWorld());
 		}
 		

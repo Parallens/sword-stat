@@ -24,7 +24,7 @@ public class KeyInputEventHandler {
 			ItemStack itemStack = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND); 
 			if ( itemStack == null || ! (itemStack.getItem() instanceof ItemSword) ) return;
 			// We want no container so we call it on the client side only.
-			if ( player.world.isRemote ){
+			if ( player.world.isRemote ){  // This is void right?
 				player.openGui(
 						Main.instance, GuiEnum.SWORD_MENU.ordinal(), player.world, 0, 0, 0
 				);

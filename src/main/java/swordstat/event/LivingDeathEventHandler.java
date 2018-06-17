@@ -20,20 +20,18 @@ public class LivingDeathEventHandler {
 	@SubscribeEvent(priority=EventPriority.LOW)
 	public void onEvent( LivingDeathEvent event ) {
 		
-		EntityPlayer player;
-		ItemStack sword;
 		// Not interested if its not a player kill or the player is not using a sword
 		if ( 
 				! (event.getSource().getTrueSource() instanceof EntityPlayer) ||
 				! (((EntityPlayer) event.getSource().getTrueSource())
 				.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND)
-				.getItem() instanceof ItemSword)
+				.getItem() instanceof ItemSword) || event.getEntity().world.isRemote
 			){
 			return;
 		}
 
-		player = (EntityPlayer) event.getSource().getTrueSource();
-		sword = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+		EntityPlayer player = (EntityPlayer) event.getSource().getTrueSource();
+		ItemStack sword = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
 		entityHandler = new EntityHelper(player.world);
 		// Check if it has NBT here & give it NBT
 		try {
