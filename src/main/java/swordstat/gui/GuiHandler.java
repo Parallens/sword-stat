@@ -2,6 +2,7 @@ package swordstat.gui;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -9,6 +10,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import swordstat.Main;
 import swordstat.util.EntityHelper;
+import swordstat.util.SwordStatResourceLocator;
 import swordstat.util.swordutil.SwordDataHelper;
 import swordstat.util.swordutil.SwordKillsHelper;
 import swordstat.util.swordutil.SwordNBTHelper;
@@ -30,7 +32,9 @@ public class GuiHandler implements IGuiHandler {
 			int ID, EntityPlayer player, World world,
 			int x, int y, int z) {
 		
-		EntityHelper entityHandler = EntityHelper.getInstance(world);
+		// all client side world == Minecraft.getMinecraft().world
+		System.out.println(world == Minecraft.getMinecraft().world);
+		EntityHelper entityHandler = SwordStatResourceLocator.getEntityHelper(world);
 		SwordNBTHelper swordNBTHelper = new SwordNBTHelper();
 		ItemStack sword = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
 		// Attach data to the sword if applicable.

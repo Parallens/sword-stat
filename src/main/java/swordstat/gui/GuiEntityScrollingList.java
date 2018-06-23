@@ -137,7 +137,7 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 						newInstance(Minecraft.getMinecraft().player.world));
 			} catch (Exception e) {
 				// Should never happen, each entity is instantiated like this in the entityHandler
-				Main.logger.error("Could not initialise entity before rendering it, this should not happen!");
+				Main.LOGGER.error("Could not initialise entity before rendering it, this should not happen!");
 				return;
 			}
 	    }

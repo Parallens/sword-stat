@@ -1,6 +1,5 @@
 package swordstat;
 
-import swordstat.proxy.CommonProxy;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -12,6 +11,9 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import swordstat.init.EntitySorter;
+import swordstat.proxy.CommonProxy;
+
 
 @Mod(modid = Main.MODID, name = Main.MODNAME, version = Main.VERSION, acceptedMinecraftVersions = "[1.12.2]")
 public class Main {
@@ -19,7 +21,7 @@ public class Main {
 	public static final String MODID = "paras_sword_stat";
 	public static final String MODNAME = "Para's Sword Stat";
 	public static final String VERSION = "0.1.3";
-	public static final Logger logger = LogManager.getLogger(MODNAME);
+	public static final Logger LOGGER = LogManager.getLogger(MODNAME);
 	
 	@Instance(MODID)
 	public static Main instance = new Main();

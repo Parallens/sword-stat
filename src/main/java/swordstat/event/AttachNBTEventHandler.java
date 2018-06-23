@@ -1,4 +1,4 @@
-	package swordstat.event;
+package swordstat.event;
 
 import swordstat.util.swordutil.SwordNBTHelper;
 import net.minecraft.item.ItemStack;

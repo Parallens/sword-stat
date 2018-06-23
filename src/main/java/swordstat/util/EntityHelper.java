@@ -20,8 +20,6 @@ public final class EntityHelper {
 	private Map<String, Class<? extends Entity>> monsterMap;
 	private Map<String, Class<? extends Entity>> passiveMap;
 	
-	private static EntityHelper INSTANCE;
-	
 	public EntityHelper( World worldObj ) {
 		
 		// Should be EntityLiving
@@ -45,7 +43,7 @@ public final class EntityHelper {
 				// This is needed otherwise the entity will not be rendered by the GUI
 				entity = entityClass.getConstructor(World.class).newInstance(worldObj);
 			} catch ( Exception e ){
-				Main.logger.error("Could not initialise entity of " + entityClass + ", skipping...");
+				Main.LOGGER.error("Could not initialise entity of " + entityClass + ", skipping...");
 			}
 			// I think this is only for 1.10, for 1.7.10 I think bosses
 			// implement a special interface for their health bar.
@@ -59,14 +57,6 @@ public final class EntityHelper {
 				passiveMap.put(entityName, entityClass);
 			}
 		}
-	}
-	
-	public static EntityHelper getInstance( World world ) {
-		
-		if ( INSTANCE == null ){
-			INSTANCE = new EntityHelper(world);
-		}
-		return INSTANCE;
 	}
 	
 	//TODO make these unmodifiable

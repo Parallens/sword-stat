@@ -1,8 +1,5 @@
 package swordstat.event;
 
-import swordstat.util.EntityHelper;
-import swordstat.util.swordutil.SwordDataEnum;
-import swordstat.util.swordutil.SwordNBTHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -11,6 +8,9 @@ import net.minecraft.item.ItemSword;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import swordstat.util.EntityHelper;
+import swordstat.util.swordutil.SwordDataEnum;
+import swordstat.util.swordutil.SwordNBTHelper;
 
 public class LivingDeathEventHandler {
 	
