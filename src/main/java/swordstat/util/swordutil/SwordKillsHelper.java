@@ -10,10 +10,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-import swordstat.util.EntityHelper;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import swordstat.init.EntitySorter.EntitySorting;
+import swordstat.util.SwordStatResourceLocator;
 
 
 public final class SwordKillsHelper {
@@ -35,7 +36,7 @@ public final class SwordKillsHelper {
 		BOSS, MONSTER, PASSIVE
 	};
 	
-	public SwordKillsHelper( final NBTTagCompound swordTag, final EntityHelper entityHelper ) {
+	public SwordKillsHelper( final NBTTagCompound swordTag, final EntitySorting entitySorting ) {
 		
 		this.swordTag = swordTag;
 		bossKills = swordTag.getIntArray(SwordDataEnum.BOSS_KILLS.toString());
@@ -45,9 +46,9 @@ public final class SwordKillsHelper {
 		// A mapping of string classes to class objects
 		// A mapping of string classes to kills
 		// A mapping of mods to sets containing string classes
-		bossClassMapping = entityHelper.getBossMap();
-		monsterClassMapping = entityHelper.getMonsterMap();
-		passiveClassMapping = entityHelper.getPassiveMap();
+		bossClassMapping = entitySorting.getSorting(SwordStatResourceLocator.BOSS_STRING);
+		monsterClassMapping = entitySorting.getSorting(SwordStatResourceLocator.MONSTER_STRING);
+		passiveClassMapping = entitySorting.getSorting(SwordStatResourceLocator.PASSIVE_STRING);
 		entityStringToClassMapping = new HashMap<String, Class<? extends Entity>>();
 		bossKillsMapping = new HashMap<String, Integer>();
 		monsterKillsMapping =  new HashMap<String, Integer>();

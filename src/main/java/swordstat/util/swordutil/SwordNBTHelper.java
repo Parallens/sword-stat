@@ -3,10 +3,7 @@ package swordstat.util.swordutil;
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
-import swordstat.Main;
-import swordstat.util.EntityHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
@@ -14,13 +11,21 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import swordstat.Main;
+import swordstat.init.EntitySorter.EntitySorting;
+import swordstat.util.SwordStatResourceLocator;
 
 public final class SwordNBTHelper {
 	
-	public EntityHelper entityHandler;
+	private final Map<String, Class<? extends Entity>> bossMapping;
+	private final Map<String, Class<? extends Entity>> monsterMapping;
+	private final Map<String, Class<? extends Entity>> passiveMapping;
 	
-	public SwordNBTHelper() {
+	public SwordNBTHelper( final EntitySorting entitySorting ) {
 		
+		this.bossMapping = entitySorting.getSorting(SwordStatResourceLocator.BOSS_STRING);
+		this.monsterMapping = entitySorting.getSorting(SwordStatResourceLocator.MONSTER_STRING);
+		this.passiveMapping = entitySorting.getSorting(SwordStatResourceLocator.PASSIVE_STRING);
 	}
 	
 	/**
@@ -56,7 +61,6 @@ public final class SwordNBTHelper {
 		 * times repaired?
 		 * cooldown?
 		 */
-		entityHandler = new EntityHelper(worldObj);
 		NBTTagCompound compound = new NBTTagCompound();
 		// Add as sub-compound to minimize conflicts.
 		Date dNow = new Date();
@@ -87,15 +91,15 @@ public final class SwordNBTHelper {
 		);
 		compound.setIntArray(
 				SwordDataEnum.BOSS_KILLS.toString(),
-				new int[entityHandler.getBossMap().size()]
+				new int[bossMapping.size()]
 		);
 		compound.setIntArray(
 				SwordDataEnum.MONSTER_KILLS.toString(),
-				new int[entityHandler.getMonsterMap().size()]
+				new int[monsterMapping.size()]
 		);
 		compound.setIntArray(
 				SwordDataEnum.PASSIVE_KILLS.toString(),
-				new int[entityHandler.getPassiveMap().size()]
+				new int[passiveMapping.size()]
 		);
 		
 		/* Now for the names of the mobs: 
@@ -106,15 +110,15 @@ public final class SwordNBTHelper {
 		
 		compound.setTag(
 				SwordDataEnum.BOSS_NAMES.toString(),
-				getNBTList(entityHandler.getBossMap())
+				getNBTList(bossMapping)
 		);
 		compound.setTag(
 				SwordDataEnum.MONSTER_NAMES.toString(),
-				getNBTList(entityHandler.getMonsterMap())
+				getNBTList(monsterMapping)
 		);
 		compound.setTag(
 				SwordDataEnum.PASSIVE_NAMES.toString(),
-				getNBTList(entityHandler.getPassiveMap())
+				getNBTList(passiveMapping)
 		);
 		
 		NBTTagCompound baseCompound = 
@@ -201,24 +205,16 @@ public final class SwordNBTHelper {
 			throw new IllegalArgumentException("Invalid itemstack!");
 		}
 		
-		entityHandler = new EntityHelper(world);
 		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(Main.MODID).copy();
 		
-		Map<String, Class<? extends Entity>> bossMapping = 
-				entityHandler.getBossMap();
 		NBTTagList bossTagList = tag.getTagList(
 				SwordDataEnum.BOSS_NAMES.toString(), Constants.NBT.TAG_COMPOUND
 		).copy();
 		int[] bossKills = tag.getIntArray(SwordDataEnum.BOSS_KILLS.toString());
-		Map<String, Class<? extends Entity>> monsterMapping = 
-				entityHandler.getMonsterMap();
 		NBTTagList monsterTagList = tag.getTagList(
 				SwordDataEnum.MONSTER_NAMES.toString(), Constants.NBT.TAG_COMPOUND
 		).copy();
 		int[] monsterKills = tag.getIntArray(SwordDataEnum.MONSTER_KILLS.toString());
-		
-		Map<String, Class<? extends Entity>> passiveMapping = 
-				entityHandler.getPassiveMap();
 		NBTTagList passiveTagList = tag.getTagList(
 				SwordDataEnum.PASSIVE_NAMES.toString(), Constants.NBT.TAG_COMPOUND
 		).copy();
@@ -227,15 +223,15 @@ public final class SwordNBTHelper {
 		
 		tag.setTag(
 				SwordDataEnum.BOSS_NAMES.toString(),
-				getNBTList(entityHandler.getBossMap())
+				getNBTList(bossMapping)
 		);
 		tag.setTag(
 				SwordDataEnum.MONSTER_NAMES.toString(),
-				getNBTList(entityHandler.getMonsterMap())
+				getNBTList(monsterMapping)
 		);
 		tag.setTag(
 				SwordDataEnum.PASSIVE_NAMES.toString(),
-				getNBTList(entityHandler.getPassiveMap())
+				getNBTList(passiveMapping)
 		);
 		
 		tag.setIntArray(

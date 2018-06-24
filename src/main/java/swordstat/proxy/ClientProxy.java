@@ -1,13 +1,13 @@
 package swordstat.proxy;
 
-import swordstat.Main;
-import swordstat.gui.GuiHandler;
-import swordstat.init.SwordStatEventHandlers;
-import swordstat.init.SwordStatKeyBindings;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import swordstat.Main;
+import swordstat.gui.GuiHandler;
+import swordstat.init.SwordStatEventHandlers;
+import swordstat.init.SwordStatKeyBindings;
 
 public class ClientProxy extends CommonProxy {
 

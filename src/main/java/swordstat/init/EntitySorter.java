@@ -78,5 +78,11 @@ public class EntitySorter {
 				return new HashMap<String, Class<? extends Entity>>(); 
 			}
 		}
+		
+		@Override
+		public String toString() {
+			
+			return entitySorts.toString();
+		}
 	}
 }

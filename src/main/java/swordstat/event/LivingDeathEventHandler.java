@@ -1,5 +1,7 @@
 package swordstat.event;
 
+import java.util.Map;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -8,14 +10,14 @@ import net.minecraft.item.ItemSword;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import swordstat.util.EntityHelper;
+import swordstat.init.EntitySorter.EntitySorting;
+import swordstat.util.SwordStatResourceLocator;
 import swordstat.util.swordutil.SwordDataEnum;
 import swordstat.util.swordutil.SwordNBTHelper;
 
 public class LivingDeathEventHandler {
 	
-	SwordNBTHelper attachmentHandler = new SwordNBTHelper();
-	EntityHelper entityHandler;
+	SwordNBTHelper attachmentHandler = new SwordNBTHelper(SwordStatResourceLocator.getEntitySorting());
 
 	@SubscribeEvent(priority=EventPriority.LOW)
 	public void onEvent( LivingDeathEvent event ) {
@@ -32,7 +34,13 @@ public class LivingDeathEventHandler {
 
 		EntityPlayer player = (EntityPlayer) event.getSource().getTrueSource();
 		ItemStack sword = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
-		entityHandler = new EntityHelper(player.world);
+		EntitySorting entitySorting = SwordStatResourceLocator.getEntitySorting();
+		Map<String, Class<? extends Entity>> bossMapping =
+				entitySorting.getSorting(SwordStatResourceLocator.BOSS_STRING);
+		Map<String, Class<? extends Entity>> monsterMapping =
+				entitySorting.getSorting(SwordStatResourceLocator.MONSTER_STRING);
+		Map<String, Class<? extends Entity>> passiveMapping =
+				entitySorting.getSorting(SwordStatResourceLocator.PASSIVE_STRING);
 		// Check if it has NBT here & give it NBT
 		try {
 			attachmentHandler.attachNBT(sword, false, player.world);
@@ -45,17 +53,17 @@ public class LivingDeathEventHandler {
 		if ( event.getEntity() instanceof EntityPlayer ){
 			attachmentHandler.incNBTData(sword, SwordDataEnum.PLAYER_KILLS);
 		}
-		else if ( entityHandler.getBossMap().containsValue(entityClass) ){
+		else if ( bossMapping.containsValue(entityClass) ){
 			attachmentHandler.incNBTData(
 					sword, SwordDataEnum.BOSS_KILLS, entityClass
 			);
 		}
-		else if ( entityHandler.getMonsterMap().containsValue(entityClass) ){
+		else if ( monsterMapping.containsValue(entityClass) ){
 			attachmentHandler.incNBTData(
 					sword, SwordDataEnum.MONSTER_KILLS, entityClass
 			);
 		}
-		else if ( entityHandler.getPassiveMap().containsValue(entityClass) ){
+		else if ( passiveMapping.containsValue(entityClass) ){
 			attachmentHandler.incNBTData(
 					sword, SwordDataEnum.PASSIVE_KILLS, entityClass
 			);

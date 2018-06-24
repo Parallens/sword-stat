@@ -6,6 +6,7 @@ import java.util.Map;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -24,70 +25,23 @@ public final class SwordStatResourceLocator {
 	public static final String MONSTER_STRING = "monsters";
 	public static final String PASSIVE_STRING = "passives";
 	
-	private static EntityHelper ENTITY_HELPER = null;
-	
-	public static EntityHelper getEntityHelper( World world ) {
-	
-		if ( ENTITY_HELPER == null ){
-			ENTITY_HELPER = new EntityHelper(world);
-		}
-		return ENTITY_HELPER;
-	}
-	
+	/**
+	 * Equivalent to the most recent call of createEntitySortingWith()
+	 * 
+	 * @return
+	 */
 	public static EntitySorting getEntitySorting() {
 		
 		if ( ENTITY_SORTING == null ){
-			Map<String, IEntityGroupSorter> sorters = new HashMap<>();
-			sorters.put(BOSS_STRING, bossSorter);
-			sorters.put(MONSTER_STRING, monsterSorter);
-			sorters.put(PASSIVE_STRING, passiveSorter);
-			ENTITY_SORTING = ENTITY_SORTER.sort(sorters);
+			// if null create empty sorting
+			ENTITY_SORTING = ENTITY_SORTER.sort(new HashMap<String, IEntityGroupSorter>());
 		}
 		return ENTITY_SORTING;
 	}
 
-	private static IEntityGroupSorter bossSorter = new IEntityGroupSorter() {
+	public static EntitySorting createEntitySortingWith( Map<String, IEntityGroupSorter> sorters ) {
 		
-		@Override
-		public boolean isInGroup( Class<? extends Entity> entityClass ) {
-		
-			if ( Modifier.isAbstract(entityClass.getModifiers()) ){
-				return false;
-			}
-			Entity entity;
-			try {
-				entity = entityClass.getConstructor(World.class)
-						.newInstance(Minecraft.getMinecraft().world);
-			} catch ( Exception e ){
-				Main.LOGGER.error("Could not initialise entity of " + entityClass + ", skipping...");
-				return false;
-			}
-			return EntityMob.class.isAssignableFrom(entityClass);
-		}
-	};
-	
-	private static IEntityGroupSorter monsterSorter = new IEntityGroupSorter() {
-		
-		@Override
-		public boolean isInGroup( Class<? extends Entity> entityClass ) {
-		
-			if ( Modifier.isAbstract(entityClass.getModifiers()) ){
-				return false;
-			}
-			return EntityMob.class.isAssignableFrom(entityClass) && 
-					!bossSorter.isInGroup(entityClass);
-		}
-	};
-	
-	private static IEntityGroupSorter passiveSorter = new IEntityGroupSorter() {
-		
-		@Override
-		public boolean isInGroup( Class<? extends Entity> entityClass ) {
-		
-			if ( Modifier.isAbstract(entityClass.getModifiers()) ){
-				return false;
-			}
-			return !( bossSorter.isInGroup(entityClass) || monsterSorter.isInGroup(entityClass) );
-		}
-	};	
+		ENTITY_SORTING = ENTITY_SORTER.sort(sorters);
+		return ENTITY_SORTING;
+	}
 }

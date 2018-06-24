@@ -1,5 +1,6 @@
 package swordstat.event;
 
+import swordstat.util.SwordStatResourceLocator;
 import swordstat.util.swordutil.SwordNBTHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
@@ -20,8 +21,7 @@ public class AttachNBTEventHandler {
 	 *   Also possibly when the player logs in
 	 */
 	
-	// No point in static as there's only one instance of class anyway.
-	public SwordNBTHelper attachmentHandler = new SwordNBTHelper();
+	public SwordNBTHelper attachmentHandler = new SwordNBTHelper(SwordStatResourceLocator.getEntitySorting());
 	
 	public void attachNBT( ItemStack itemStack, World worldObj ) {
 		

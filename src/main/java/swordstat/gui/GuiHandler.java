@@ -2,14 +2,13 @@ package swordstat.gui;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import swordstat.Main;
-import swordstat.util.EntityHelper;
+import swordstat.init.EntitySorter.EntitySorting;
 import swordstat.util.SwordStatResourceLocator;
 import swordstat.util.swordutil.SwordDataHelper;
 import swordstat.util.swordutil.SwordKillsHelper;
@@ -33,9 +32,9 @@ public class GuiHandler implements IGuiHandler {
 			int x, int y, int z) {
 		
 		// all client side world == Minecraft.getMinecraft().world
-		System.out.println(world == Minecraft.getMinecraft().world);
-		EntityHelper entityHandler = SwordStatResourceLocator.getEntityHelper(world);
-		SwordNBTHelper swordNBTHelper = new SwordNBTHelper();
+		//EntityHelper entityHandler = SwordStatResourceLocator.getEntityHelper(world);
+		EntitySorting entitySorting = SwordStatResourceLocator.getEntitySorting();
+		SwordNBTHelper swordNBTHelper = new SwordNBTHelper(SwordStatResourceLocator.getEntitySorting());
 		ItemStack sword = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
 		// Attach data to the sword if applicable.
 		try {
@@ -45,7 +44,7 @@ public class GuiHandler implements IGuiHandler {
 		}
 		swordNBTHelper.updateNBTData(sword, world);
 		SwordDataHelper swordDataHelper = new SwordDataHelper(sword, player);
-		SwordKillsHelper swordKillsHelper = new SwordKillsHelper(sword.getTagCompound().getCompoundTag(Main.MODID), entityHandler);
+		SwordKillsHelper swordKillsHelper = new SwordKillsHelper(sword.getTagCompound().getCompoundTag(Main.MODID), entitySorting);
 		if ( ID == GuiEnum.SWORD_MENU.ordinal() ){
 			return new GuiSwordParent(world, swordDataHelper, swordKillsHelper);
 		}
