@@ -21,12 +21,11 @@ public class AttachNBTEventHandler {
 	 *   Also possibly when the player logs in
 	 */
 	
-	public SwordNBTHelper attachmentHandler = new SwordNBTHelper(SwordStatResourceLocator.getEntitySorting());
-	
 	public void attachNBT( ItemStack itemStack, World worldObj ) {
-		
+
+		SwordNBTHelper swordNBTHelper = SwordStatResourceLocator.getSwordNBTHelper();
 		if ( itemStack.getItem() instanceof ItemSword ){
-			attachmentHandler.attachNBT(itemStack, true, worldObj);
+			swordNBTHelper.attachNBT(itemStack, true, worldObj);
 		}
 		else {
 			// Raise some error

@@ -17,8 +17,6 @@ import swordstat.util.swordutil.SwordNBTHelper;
 
 public class LivingDeathEventHandler {
 	
-	SwordNBTHelper attachmentHandler = new SwordNBTHelper(SwordStatResourceLocator.getEntitySorting());
-
 	@SubscribeEvent(priority=EventPriority.LOW)
 	public void onEvent( LivingDeathEvent event ) {
 		
@@ -42,29 +40,31 @@ public class LivingDeathEventHandler {
 		Map<String, Class<? extends Entity>> passiveMapping =
 				entitySorting.getSorting(SwordStatResourceLocator.PASSIVE_STRING);
 		// Check if it has NBT here & give it NBT
+
+		SwordNBTHelper swordNBTHelper = SwordStatResourceLocator.getSwordNBTHelper();
 		try {
-			attachmentHandler.attachNBT(sword, false, player.world);
+			swordNBTHelper.attachNBT(sword, false, player.world);
 		}
 		catch ( IllegalArgumentException e ) {
 			// The sword already has relevant NBT attached.
 		}
-		attachmentHandler.incNBTData(sword, SwordDataEnum.TOTAL_KILLS);
+		swordNBTHelper.incNBTData(sword, SwordDataEnum.TOTAL_KILLS);
 		Class<? extends Entity> entityClass = event.getEntity().getClass();
 		if ( event.getEntity() instanceof EntityPlayer ){
-			attachmentHandler.incNBTData(sword, SwordDataEnum.PLAYER_KILLS);
+			swordNBTHelper.incNBTData(sword, SwordDataEnum.PLAYER_KILLS);
 		}
 		else if ( bossMapping.containsValue(entityClass) ){
-			attachmentHandler.incNBTData(
+			swordNBTHelper.incNBTData(
 					sword, SwordDataEnum.BOSS_KILLS, entityClass
 			);
 		}
 		else if ( monsterMapping.containsValue(entityClass) ){
-			attachmentHandler.incNBTData(
+			swordNBTHelper.incNBTData(
 					sword, SwordDataEnum.MONSTER_KILLS, entityClass
 			);
 		}
 		else if ( passiveMapping.containsValue(entityClass) ){
-			attachmentHandler.incNBTData(
+			swordNBTHelper.incNBTData(
 					sword, SwordDataEnum.PASSIVE_KILLS, entityClass
 			);
 		}

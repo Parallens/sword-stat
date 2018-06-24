@@ -153,7 +153,7 @@ public final class SwordNBTHelper {
 		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(Main.MODID).copy();
 		int[] kills = tag.getIntArray(data.toString());
 		// DEBUG
-		//System.out.println("length: " + kills.length);
+		//System.out.println(kills);
 		NBTTagList tagList = tag.getTagList(listEnum.toString(), Constants.NBT.TAG_COMPOUND);
 		// DEBUG
 		//System.out.println("tagList: " + tagList);
@@ -211,14 +211,15 @@ public final class SwordNBTHelper {
 				SwordDataEnum.BOSS_NAMES.toString(), Constants.NBT.TAG_COMPOUND
 		).copy();
 		int[] bossKills = tag.getIntArray(SwordDataEnum.BOSS_KILLS.toString());
+		
 		NBTTagList monsterTagList = tag.getTagList(
 				SwordDataEnum.MONSTER_NAMES.toString(), Constants.NBT.TAG_COMPOUND
 		).copy();
 		int[] monsterKills = tag.getIntArray(SwordDataEnum.MONSTER_KILLS.toString());
+		
 		NBTTagList passiveTagList = tag.getTagList(
 				SwordDataEnum.PASSIVE_NAMES.toString(), Constants.NBT.TAG_COMPOUND
 		).copy();
-		
 		int[] passiveKills = tag.getIntArray(SwordDataEnum.PASSIVE_KILLS.toString());
 		
 		tag.setTag(

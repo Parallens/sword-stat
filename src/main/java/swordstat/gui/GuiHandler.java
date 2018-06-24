@@ -32,9 +32,8 @@ public class GuiHandler implements IGuiHandler {
 			int x, int y, int z) {
 		
 		// all client side world == Minecraft.getMinecraft().world
-		//EntityHelper entityHandler = SwordStatResourceLocator.getEntityHelper(world);
 		EntitySorting entitySorting = SwordStatResourceLocator.getEntitySorting();
-		SwordNBTHelper swordNBTHelper = new SwordNBTHelper(SwordStatResourceLocator.getEntitySorting());
+		SwordNBTHelper swordNBTHelper = SwordStatResourceLocator.getSwordNBTHelper();
 		ItemStack sword = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
 		// Attach data to the sword if applicable.
 		try {
