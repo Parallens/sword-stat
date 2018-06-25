@@ -158,7 +158,6 @@ public final class SwordKillsHelper {
 	 */
 	public Set<String> getModStrings() {
 
-		System.out.println(modToEntityMapping);
 		return modToEntityMapping.keySet();
 	}
 	

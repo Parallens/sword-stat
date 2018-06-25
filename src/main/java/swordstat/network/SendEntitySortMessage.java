@@ -13,6 +13,7 @@ import swordstat.Main;
 import swordstat.init.EntitySorter.EntitySorting;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SendEntitySortMessage implements IMessage {
@@ -57,7 +58,10 @@ public class SendEntitySortMessage implements IMessage {
 		
 		Map<String, Map<String, Class<? extends Entity>>> map = null;
 		try {
-			 map = (Map<String, Map<String, Class<? extends Entity>>>) mapper.readValue(mapJsonString, Map.class);
+			map = mapper.readValue(
+					mapJsonString,
+					new TypeReference<Map<String, Map<String, Class<? extends Entity>>>>(){}
+			);
 		}
 		catch ( IOException e ){
 			Main.LOGGER.error("Error reading json");

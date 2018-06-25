@@ -272,9 +272,9 @@ public final class SwordNBTHelper {
 		
 		NBTTagList NBTList = new NBTTagList();
 		int i = 0;
-		for ( String entityName : mapping.keySet() ){
+		for ( Class<? extends Entity> entityClass : mapping.values() ){
 			NBTTagCompound shortTag = new NBTTagCompound();
-			String entityClassString = mapping.get(entityName).toString();
+			String entityClassString = entityClass.toString();
 			shortTag.setInteger(entityClassString, i);
 			NBTList.appendTag(shortTag);
 			i++;

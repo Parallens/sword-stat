@@ -7,6 +7,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import swordstat.Main;
 import swordstat.init.SwordStatEventHandlers;
+import swordstat.network.AskServerToAddNBTMessage;
+import swordstat.network.AskServerToAddNBTMessage.AskServerToAddNBTMessageHandler;
 import swordstat.network.SendEntitySortMessage;
 import swordstat.network.SendEntitySortMessageHandler;
 
@@ -24,6 +26,9 @@ public class CommonProxy {
 		Main.INSTANCE.registerMessage(
 				SendEntitySortMessageHandler.class, SendEntitySortMessage.class, 0, Side.CLIENT
 		);
+		Main.INSTANCE.registerMessage(
+				AskServerToAddNBTMessageHandler.class, AskServerToAddNBTMessage.class, 1, Side.SERVER
+		);		
 	}
 	
 	public void fmlLifeCycleEvent( FMLPostInitializationEvent event ) {
