@@ -79,10 +79,35 @@ public class EntitySorter {
 			}
 		}
 		
+		public Map<String, Map<String, Class<? extends Entity>>> getInternalMapping() {
+			
+			return entitySorts;
+		}
+		
 		@Override
 		public String toString() {
 			
 			return entitySorts.toString();
+		}
+		
+		@Override
+		public boolean equals( Object o ) {
+			
+			EntitySorting other;
+			if ( o == null ) return false;
+			try {
+				other = (EntitySorting) o;
+			}
+			catch ( ClassCastException e ){
+				return false;
+			}
+			return entitySorts.equals(other.getInternalMapping());
+		}
+		
+		@Override
+		public int hashCode() {
+			
+			return entitySorts.hashCode();
 		}
 	}
 }

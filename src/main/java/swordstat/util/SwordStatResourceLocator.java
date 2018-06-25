@@ -28,11 +28,11 @@ public final class SwordStatResourceLocator {
 		return SWORD_NBT_HELPER;
 	}
 	
-	/**
-	 * Equivalent to the most recent call of createEntitySortingWith()
-	 * 
-	 * @return
-	 */
+	public static final EntitySorter getEntitySorter() {
+		
+		return ENTITY_SORTER;
+	}
+	
 	public static EntitySorting getEntitySorting() {
 		
 		if ( ENTITY_SORTING == null ){
@@ -41,10 +41,9 @@ public final class SwordStatResourceLocator {
 		}
 		return ENTITY_SORTING;
 	}
-
-	public static EntitySorting createEntitySortingWith( Map<String, IEntityGroupSorter> sorters ) {
+	
+	public static void setEntitySorting( EntitySorting entitySorting ) {
 		
-		ENTITY_SORTING = ENTITY_SORTER.sort(sorters);
-		return ENTITY_SORTING;
+		ENTITY_SORTING = entitySorting;
 	}
 }

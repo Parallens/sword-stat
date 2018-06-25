@@ -7,11 +7,12 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import swordstat.init.EntitySorter;
 import swordstat.proxy.CommonProxy;
 
 
@@ -22,6 +23,7 @@ public class Main {
 	public static final String MODNAME = "Para's Sword Stat";
 	public static final String VERSION = "0.1.3";
 	public static final Logger LOGGER = LogManager.getLogger(MODNAME);
+	public static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 	
 	@Instance(MODID)
 	public static Main instance = new Main();

@@ -35,6 +35,7 @@ public class GuiHandler implements IGuiHandler {
 		EntitySorting entitySorting = SwordStatResourceLocator.getEntitySorting();
 		SwordNBTHelper swordNBTHelper = SwordStatResourceLocator.getSwordNBTHelper();
 		ItemStack sword = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+		// TODO send packet to server to add NBT if applicable
 		// Attach data to the sword if applicable.
 		try {
 			swordNBTHelper.attachNBT(sword, false, world);

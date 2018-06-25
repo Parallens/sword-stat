@@ -7,12 +7,16 @@ import java.util.Map;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import swordstat.Main;
+import swordstat.init.EntitySorter;
+import swordstat.init.EntitySorter.EntitySorting;
 import swordstat.init.EntitySorter.IEntityGroupSorter;
+import swordstat.network.SendEntitySortMessage;
 import swordstat.util.SwordStatResourceLocator;
 
 public class PlayerLoggedInEventHandler {
@@ -24,22 +28,25 @@ public class PlayerLoggedInEventHandler {
 	public void onEvent( final PlayerLoggedInEvent event ) {
 
 		// only want to do this once
-		if ( !isFirstPlayer ){
-			return;
+		if ( isFirstPlayer ){
+			Main.LOGGER.info("Sorting entities into bosses, monsters and passives");
+			final IEntityGroupSorter bossSorter = new BossSorter(event.player.world);
+			final IEntityGroupSorter monsterSorter = new MonsterSorter(bossSorter);
+			final IEntityGroupSorter passiveSorter = new PassiveSorter(bossSorter, monsterSorter);
+			
+			Map<String, IEntityGroupSorter> sorters = new HashMap<>();
+			sorters.put(SwordStatResourceLocator.BOSS_STRING, bossSorter);
+			sorters.put(SwordStatResourceLocator.MONSTER_STRING, monsterSorter);
+			sorters.put(SwordStatResourceLocator.PASSIVE_STRING, passiveSorter);
+			EntitySorter entitySorter = SwordStatResourceLocator.getEntitySorter();
+			SwordStatResourceLocator.setEntitySorting(entitySorter.sort(sorters));
 		}
 		
 		isFirstPlayer = false;
 		
-		Main.LOGGER.info("Sorting entities into bosses, monsters and passives");
-		final IEntityGroupSorter bossSorter = new BossSorter(event.player.world);
-		final IEntityGroupSorter monsterSorter = new MonsterSorter(bossSorter);
-		final IEntityGroupSorter passiveSorter = new PassiveSorter(bossSorter, monsterSorter);
-		
-		Map<String, IEntityGroupSorter> sorters = new HashMap<>();
-		sorters.put(SwordStatResourceLocator.BOSS_STRING, bossSorter);
-		sorters.put(SwordStatResourceLocator.MONSTER_STRING, monsterSorter);
-		sorters.put(SwordStatResourceLocator.PASSIVE_STRING, passiveSorter);
-		SwordStatResourceLocator.createEntitySortingWith(sorters);
+		// Send entity sorting to newly logged in client
+		EntitySorting entitySorting = SwordStatResourceLocator.getEntitySorting();
+		Main.INSTANCE.sendTo(new SendEntitySortMessage(entitySorting), (EntityPlayerMP) event.player);
 	}
 	
 	private static class BossSorter implements IEntityGroupSorter {

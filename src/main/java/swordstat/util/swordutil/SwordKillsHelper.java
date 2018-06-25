@@ -68,12 +68,12 @@ public final class SwordKillsHelper {
 			passiveKillsMapping.put(entry.getValue().toString(), passiveKills[i]);
 			entityStringToClassMapping.put(entry.getValue().toString(), entry.getValue());i++;
 		}
-		entityStringToKillsMapping = new HashMap<String, Integer>();
+		entityStringToKillsMapping = new HashMap<>();
 		entityStringToKillsMapping.putAll(bossKillsMapping);
 		entityStringToKillsMapping.putAll(monsterKillsMapping);
 		entityStringToKillsMapping.putAll(passiveKillsMapping);
 		// Now create the different
-		modToEntityMapping = new TreeMap<String, Set<String>>();
+		modToEntityMapping = new TreeMap<>();
 		for ( String className : entityStringToKillsMapping.keySet() ){
 			String[] split = entitySplit.split(className);
 			if ( split.length == 2 ){
@@ -81,7 +81,7 @@ public final class SwordKillsHelper {
 					modToEntityMapping.get(split[0]).add(className);
 				}
 				else {
-					modToEntityMapping.put(split[0], new HashSet<String>(Arrays.asList(new String[] {className})));
+					modToEntityMapping.put(split[0], new HashSet<>(Arrays.asList(new String[] {className})));
 				}
 			}
 		}
@@ -157,7 +157,8 @@ public final class SwordKillsHelper {
 	 * @return
 	 */
 	public Set<String> getModStrings() {
-		
+
+		System.out.println(modToEntityMapping);
 		return modToEntityMapping.keySet();
 	}
 	
