@@ -1,24 +1,13 @@
 package swordstat.event;
 
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
-
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import swordstat.Main;
-import swordstat.init.EntitySorter;
 import swordstat.init.EntitySorter.EntitySorting;
-import swordstat.init.EntitySorter.IEntityGroupSorter;
 import swordstat.init.EntitySortingInit;
 import swordstat.network.TellClientToSortEntitiesMessage;
-import swordstat.util.ServerResourceLocator;
 
 public class PlayerLoggedInEventHandler {
 
@@ -36,13 +25,19 @@ public class PlayerLoggedInEventHandler {
 					event.player.world
 			);
 			Main.SERVER_RESOURCE_LOCATOR.setEntitySorting(entitySorting);
+			 if ( entitySorting.getInternalMapping().size() > 0 ){
+			        Main.LOGGER.info("Entity sorting appears to have been processed on the server correctly");
+		        }
+		     else {
+		    	 Main.LOGGER.info("Entity sorting does not appear to have been processed correctly on server");
+		     }
 		}
 		
 		isFirstPlayer = false;
 		
 		// Tell client to sort entities as well
+		Main.LOGGER.info("Asking client to sort entities");
 		Main.INSTANCE.sendTo(new TellClientToSortEntitiesMessage(), (EntityPlayerMP) event.player);
 	}
-	
 
 }

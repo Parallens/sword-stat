@@ -36,9 +36,9 @@ public final class GuiSwordParent extends GuiScreen {
 	/** Maximum number of tabs that can be rendered on the GUI at any given moment. **/
 	private final static int MAX_TABS = 5;
 	/** Index of the page which is currently selected and being rendered. **/
-	private int activePageIndex = 0;
+	private static int activePageIndex = 0;
 	/** Index of the page whose tab button should be rendered as the leftmost GUI tab. **/
-	private int startPageIndex = 0;
+	private static int startPageIndex = 0;
 	/** How many tabs are currently being displayed. **/
 	private int tabsPresent;
 	
@@ -86,8 +86,12 @@ public final class GuiSwordParent extends GuiScreen {
         for ( int i = startPageIndex; i <= endIndex; i++ ){
         	if ( i == activePageIndex ){
         		SelectedTabButton.ButtonType buttonType = SelectedTabButton.ButtonType.MIDDLE;
-        		//if ( (i - startPageIndex) == 0 ) buttonType = SelectedTabButton.ButtonType.FIRST;
-        		//else if ( i == endIndex ) buttonType = SelectedTabButton.ButtonType.END;
+        		// double check does no harm
+        		boolean startPageIndexInRange = startPageIndex >= 0 && startPageIndex < pages.size();
+        		boolean activePageIndexInRange = activePageIndex >= 0 && activePageIndex < pages.size();
+        		if ( !startPageIndexInRange || !activePageIndexInRange ){
+        			startPageIndex = 0; activePageIndex = 0;
+        		}
         		buttonList.add(new SelectedTabButton(
         				i - startPageIndex,
         				15 + widthOffset + (i - startPageIndex) * (SelectedTabButton.width + 2),

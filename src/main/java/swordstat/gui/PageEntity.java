@@ -17,13 +17,14 @@ import net.minecraft.item.ItemStack;
 public class PageEntity implements IGuiSwordPage {
 	
 	private final Set<String> entityStrings;
-	private final Set<String> bossStrings = new TreeSet<String>();
-	private final Set<String> monsterStrings = new TreeSet<String>();
-	private final Set<String> passiveStrings = new TreeSet<String>();
+	private final Set<String> bossStrings = new TreeSet<>();
+	private final Set<String> monsterStrings = new TreeSet<>();
+	private final Set<String> passiveStrings = new TreeSet<>();
 	private final SwordKillsHelper swordKillsHelper;
 	private final CreativeTabs inferedCreativeTab;
 	private GuiEntityScrollingList entityScrollingList;
-	private SwordKillsHelper.EntityType activeEntityType = SwordKillsHelper.EntityType.MONSTER;
+	// static for convenience
+	private static SwordKillsHelper.EntityType activeEntityType = SwordKillsHelper.EntityType.MONSTER;
 	private int screenWidth, screenHeight;
 	//private final ItemStack iconItemStack;
 	
@@ -54,7 +55,7 @@ public class PageEntity implements IGuiSwordPage {
 		
 	}
 	
-	//@Override
+	@Override
 	public void onResize( int screenWidth, int screenHeight ) {
 		
 		this.screenWidth = screenWidth;
@@ -75,7 +76,7 @@ public class PageEntity implements IGuiSwordPage {
 		);
 	}
 	
-	//@Override
+	@Override
 	public void drawContents( int mouseX, int mouseY, float partialTicks ) {
 		
 		//System.out.println(Arrays.toString(entityStrings.toArray()));
@@ -105,7 +106,7 @@ public class PageEntity implements IGuiSwordPage {
 		}
 	}
 
-	//@Override
+	@Override
 	public ItemStack getIconItemStack() {
 
 		try {
@@ -116,7 +117,7 @@ public class PageEntity implements IGuiSwordPage {
 		}
 	}
 	
-	//@Override
+	@Override
 	public List<GuiButton> getButtons( int buttonStartIndex ) {
 		
 		final int buttonHeight = 20;
