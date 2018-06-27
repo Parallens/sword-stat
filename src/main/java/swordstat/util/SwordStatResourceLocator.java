@@ -1,49 +1,38 @@
 package swordstat.util;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import swordstat.init.EntitySorter;
 import swordstat.init.EntitySorter.EntitySorting;
 import swordstat.init.EntitySorter.IEntityGroupSorter;
-import swordstat.util.swordutil.SwordNBTHelper;
 
-public final class SwordStatResourceLocator {
-	
-	private static final EntitySorter ENTITY_SORTER = 
-			new EntitySorter(ForgeRegistries.ENTITIES.getValuesCollection());
-	private static EntitySorting ENTITY_SORTING = null;
-	private static SwordNBTHelper SWORD_NBT_HELPER = null;
+public class SwordStatResourceLocator {
 	
 	public static final String BOSS_STRING = "bosses";
 	public static final String MONSTER_STRING = "monsters";
 	public static final String PASSIVE_STRING = "passives";
+
+	private final EntitySorter entitySorter = 
+			new EntitySorter(ForgeRegistries.ENTITIES.getValuesCollection());
+	private EntitySorting entitySorting = null;
 	
-	public static SwordNBTHelper getSwordNBTHelper() {
+	public EntitySorter getEntitySorter() {
 		
-		if ( SWORD_NBT_HELPER == null ){
-			SWORD_NBT_HELPER = new SwordNBTHelper(getEntitySorting());
-		}
-		return SWORD_NBT_HELPER;
+		return entitySorter;
 	}
 	
-	public static final EntitySorter getEntitySorter() {
+	public EntitySorting getEntitySorting() {
 		
-		return ENTITY_SORTER;
-	}
-	
-	public static EntitySorting getEntitySorting() {
-		
-		if ( ENTITY_SORTING == null ){
+		if ( entitySorting == null ){
 			// if null create empty sorting
-			ENTITY_SORTING = ENTITY_SORTER.sort(new HashMap<String, IEntityGroupSorter>());
+			entitySorting = entitySorter.sort(new HashMap<String, IEntityGroupSorter>());
 		}
-		return ENTITY_SORTING;
+		return entitySorting;
 	}
 	
-	public static void setEntitySorting( EntitySorting entitySorting ) {
+	public void setEntitySorting( EntitySorting entitySorting ) {
 		
-		ENTITY_SORTING = entitySorting;
-	}
+		this.entitySorting = entitySorting;
+	}	
 }

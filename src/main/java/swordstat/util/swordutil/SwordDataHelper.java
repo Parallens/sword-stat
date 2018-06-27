@@ -13,12 +13,14 @@ public final class SwordDataHelper {
 	private HashMap<String, Object> dataMapping = new HashMap<String, Object>();
 	private final ItemStack sword;
 	private final EntityPlayer playerIn;
+	private final NBTTagCompound tagCompound;
 	
-	public SwordDataHelper( ItemStack sword, EntityPlayer playerIn ) {
+	public SwordDataHelper( ItemStack sword, NBTTagCompound tagCompound, EntityPlayer playerIn ) {
 		
-		//isItemStackValid(sword)
 		this.sword = sword;
 		this.playerIn = playerIn;
+		this.tagCompound = tagCompound;
+		
 		dataMapping.put(
 				SwordDataEnum.NAME.toString(),
 				sword.getDisplayName()
@@ -51,43 +53,42 @@ public final class SwordDataHelper {
 		
 		// Now for the data obtained from NBT
 		
-		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(Main.MODID);
 		dataMapping.put(
 				SwordDataEnum.IRL_DATE_CRAFTED.toString(),
-				(tag.hasKey(SwordDataEnum.IRL_DATE_CRAFTED.toString()))?
-						tag.getString(SwordDataEnum.IRL_DATE_CRAFTED.toString()):
+				(tagCompound.hasKey(SwordDataEnum.IRL_DATE_CRAFTED.toString()))?
+						tagCompound.getString(SwordDataEnum.IRL_DATE_CRAFTED.toString()):
 						null
 		);
 		dataMapping.put(
 				SwordDataEnum.INGAME_AGE.toString(),
 				Minecraft.getMinecraft().world.getTotalWorldTime() - 
-				Integer.parseInt(tag.getString(SwordDataEnum.INGAME_AGE.toString()))
+				Integer.parseInt(tagCompound.getString(SwordDataEnum.INGAME_AGE.toString()))
 		);
 		dataMapping.put(
 				SwordDataEnum.IRL_DATE_FOUND.toString(),
-				(tag.hasKey(SwordDataEnum.IRL_DATE_FOUND.toString()))?
-						tag.getString(SwordDataEnum.IRL_DATE_FOUND.toString()):
+				(tagCompound.hasKey(SwordDataEnum.IRL_DATE_FOUND.toString()))?
+						tagCompound.getString(SwordDataEnum.IRL_DATE_FOUND.toString()):
 						null
 		);
 		dataMapping.put(
 				SwordDataEnum.TOTAL_KILLS.toString(),
-				tag.getInteger(SwordDataEnum.TOTAL_KILLS.toString())
+				tagCompound.getInteger(SwordDataEnum.TOTAL_KILLS.toString())
 		);
 		dataMapping.put(
 				SwordDataEnum.PLAYER_KILLS.toString(),
-				tag.getInteger(SwordDataEnum.PLAYER_KILLS.toString())
+				tagCompound.getInteger(SwordDataEnum.PLAYER_KILLS.toString())
 		);
 		dataMapping.put(
 				SwordDataEnum.BOSS_KILLS.toString(),
-				tag.getIntArray(SwordDataEnum.BOSS_KILLS.toString())
+				tagCompound.getIntArray(SwordDataEnum.BOSS_KILLS.toString())
 		);
 		dataMapping.put(
 				SwordDataEnum.MONSTER_KILLS.toString(),
-				tag.getIntArray(SwordDataEnum.MONSTER_KILLS.toString())
+				tagCompound.getIntArray(SwordDataEnum.MONSTER_KILLS.toString())
 		);
 		dataMapping.put(
 				SwordDataEnum.PASSIVE_KILLS.toString(),
-				tag.getIntArray(SwordDataEnum.PASSIVE_KILLS.toString())
+				tagCompound.getIntArray(SwordDataEnum.PASSIVE_KILLS.toString())
 		);
 	}
 	

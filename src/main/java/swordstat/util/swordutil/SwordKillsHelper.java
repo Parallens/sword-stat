@@ -14,7 +14,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import swordstat.init.EntitySorter.EntitySorting;
-import swordstat.util.SwordStatResourceLocator;
+import swordstat.util.ServerResourceLocator;
 
 
 public final class SwordKillsHelper {
@@ -46,9 +46,9 @@ public final class SwordKillsHelper {
 		// A mapping of string classes to class objects
 		// A mapping of string classes to kills
 		// A mapping of mods to sets containing string classes
-		bossClassMapping = entitySorting.getSorting(SwordStatResourceLocator.BOSS_STRING);
-		monsterClassMapping = entitySorting.getSorting(SwordStatResourceLocator.MONSTER_STRING);
-		passiveClassMapping = entitySorting.getSorting(SwordStatResourceLocator.PASSIVE_STRING);
+		bossClassMapping = entitySorting.getSorting(ServerResourceLocator.BOSS_STRING);
+		monsterClassMapping = entitySorting.getSorting(ServerResourceLocator.MONSTER_STRING);
+		passiveClassMapping = entitySorting.getSorting(ServerResourceLocator.PASSIVE_STRING);
 		entityStringToClassMapping = new HashMap<String, Class<? extends Entity>>();
 		bossKillsMapping = new HashMap<String, Integer>();
 		monsterKillsMapping =  new HashMap<String, Integer>();

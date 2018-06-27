@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import swordstat.Main;
-import swordstat.util.SwordStatResourceLocator;
+import swordstat.util.ServerResourceLocator;
 import swordstat.util.swordutil.SwordNBTHelper;
 
 /**
@@ -18,22 +18,35 @@ import swordstat.util.swordutil.SwordNBTHelper;
  *ask the server to add NBT to it. 
  */
 public class AskServerToAddNBTMessage implements IMessage {
-
-	@Override
-	public void fromBytes( ByteBuf buf ) {
-
+	
+	private boolean openGUIAfterProcessing = false;
+	
+	public AskServerToAddNBTMessage() {
+		
+	}
+	
+	public AskServerToAddNBTMessage( final boolean openGUIAfterProcessing ) {
+		
+		this.openGUIAfterProcessing = openGUIAfterProcessing;
 	}
 
 	@Override
 	public void toBytes( ByteBuf buf ) {
 
+		buf.writeBoolean(openGUIAfterProcessing);
+	}
+
+	@Override
+	public void fromBytes( ByteBuf buf ) {
+
+		openGUIAfterProcessing = buf.readBoolean();
 	}
 
 	public static class AskServerToAddNBTMessageHandler 
 		implements IMessageHandler<AskServerToAddNBTMessage, IMessage> {
 
 		@Override
-		public IMessage onMessage( AskServerToAddNBTMessage message, MessageContext ctx ) {
+		public IMessage onMessage( final AskServerToAddNBTMessage message, MessageContext ctx ) {
 
 			if ( ctx.side != Side.SERVER ) {
 		        Main.LOGGER.error("SendEntitySortMessage received on wrong side:" + ctx.side);
@@ -45,7 +58,7 @@ public class AskServerToAddNBTMessage implements IMessage {
 		    	
 		    	public void run() {
 		    		
-		    		SwordNBTHelper swordNBTHelper = SwordStatResourceLocator.getSwordNBTHelper();
+		    		SwordNBTHelper swordNBTHelper = Main.SERVER_RESOURCE_LOCATOR.getSwordNBTHelper();
 		    		ItemStack itemStack = serverPlayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
 		    		if ( itemStack != null && itemStack.getItem() instanceof ItemSword ) {
 		    			try {
@@ -55,10 +68,17 @@ public class AskServerToAddNBTMessage implements IMessage {
 		    			}
 		    			swordNBTHelper.updateNBTData(itemStack, serverPlayer.getServerWorld());
 		    		}
+		    		// We don't send it in the return below, we send it here to ensure processing above is done
+		    		if ( message.openGUIAfterProcessing ){
+		    			Main.INSTANCE.sendTo(
+		    					new OpenSwordStatGuiOnClientMessage(itemStack.getTagCompound()),
+		    					serverPlayer
+		    			);
+		    		}
 		    	}
 		    });
 		    
-			return null;
+		    return null;
 		}
 		
 		

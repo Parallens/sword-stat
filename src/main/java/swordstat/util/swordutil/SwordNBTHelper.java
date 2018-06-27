@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import swordstat.Main;
 import swordstat.init.EntitySorter.EntitySorting;
-import swordstat.util.SwordStatResourceLocator;
+import swordstat.util.ServerResourceLocator;
 
 public final class SwordNBTHelper {
 	
@@ -23,9 +23,9 @@ public final class SwordNBTHelper {
 	
 	public SwordNBTHelper( final EntitySorting entitySorting ) {
 		
-		this.bossMapping = entitySorting.getSorting(SwordStatResourceLocator.BOSS_STRING);
-		this.monsterMapping = entitySorting.getSorting(SwordStatResourceLocator.MONSTER_STRING);
-		this.passiveMapping = entitySorting.getSorting(SwordStatResourceLocator.PASSIVE_STRING);
+		this.bossMapping = entitySorting.getSorting(ServerResourceLocator.BOSS_STRING);
+		this.monsterMapping = entitySorting.getSorting(ServerResourceLocator.MONSTER_STRING);
+		this.passiveMapping = entitySorting.getSorting(ServerResourceLocator.PASSIVE_STRING);
 	}
 	
 	/**

@@ -9,8 +9,10 @@ import swordstat.Main;
 import swordstat.init.SwordStatEventHandlers;
 import swordstat.network.AskServerToAddNBTMessage;
 import swordstat.network.AskServerToAddNBTMessage.AskServerToAddNBTMessageHandler;
-import swordstat.network.SendEntitySortMessage;
-import swordstat.network.SendEntitySortMessageHandler;
+import swordstat.network.OpenSwordStatGuiOnClientMessage;
+import swordstat.network.OpenSwordStatGuiOnClientMessage.OpenSwordStatGuiOnClientMessageHandler;
+import swordstat.network.TellClientToSortEntitiesMessage;
+import swordstat.network.TellClientToSortEntitiesMessageHandler;
 
 public class CommonProxy {
 	
@@ -24,11 +26,14 @@ public class CommonProxy {
 		
 		SwordStatEventHandlers.registerServer();
 		Main.INSTANCE.registerMessage(
-				SendEntitySortMessageHandler.class, SendEntitySortMessage.class, 0, Side.CLIENT
+				TellClientToSortEntitiesMessageHandler.class, TellClientToSortEntitiesMessage.class, 0, Side.CLIENT
 		);
 		Main.INSTANCE.registerMessage(
 				AskServerToAddNBTMessageHandler.class, AskServerToAddNBTMessage.class, 1, Side.SERVER
-		);		
+		);
+		Main.INSTANCE.registerMessage(
+				OpenSwordStatGuiOnClientMessageHandler.class, OpenSwordStatGuiOnClientMessage.class, 2, Side.CLIENT
+		);
 	}
 	
 	public void fmlLifeCycleEvent( FMLPostInitializationEvent event ) {

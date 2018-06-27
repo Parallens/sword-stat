@@ -10,6 +10,8 @@ import swordstat.init.SwordStatEventHandlers;
 import swordstat.init.SwordStatKeyBindings;
 
 public class ClientProxy extends CommonProxy {
+	
+	public static GuiHandler GUI_HANDLER = new GuiHandler();
 
 	@Override
 	public void fmlLifeCycleEvent( FMLPreInitializationEvent event ) {
@@ -23,7 +25,7 @@ public class ClientProxy extends CommonProxy {
 		super.fmlLifeCycleEvent(event);
 		SwordStatKeyBindings.init();
 		SwordStatEventHandlers.registerClient();
-		NetworkRegistry.INSTANCE.registerGuiHandler(Main.instance, new GuiHandler());
+		NetworkRegistry.INSTANCE.registerGuiHandler(Main.instance, GUI_HANDLER);
 	}
 	
 	@Override

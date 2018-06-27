@@ -26,12 +26,14 @@ public class KeyInputEventHandler {
 			if ( itemStack == null || ! (itemStack.getItem() instanceof ItemSword) ) return;
 			
 			// Ask the server to add NBT to the sword (server will decide if this is necessary, e.g. could already be added)
-			Main.INSTANCE.sendToServer(new AskServerToAddNBTMessage());
+			Main.INSTANCE.sendToServer(new AskServerToAddNBTMessage(true));
 			
+			/*
 			// We want no container so we call it on the client side only.
 			player.openGui(
 					Main.instance, GuiEnum.SWORD_MENU.ordinal(), player.world, 0, 0, 0
 			);
+			*/
 
 		}
 	}

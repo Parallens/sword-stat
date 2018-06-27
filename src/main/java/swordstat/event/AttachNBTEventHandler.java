@@ -1,6 +1,7 @@
 package swordstat.event;
 
-import swordstat.util.SwordStatResourceLocator;
+import swordstat.Main;
+import swordstat.util.ServerResourceLocator;
 import swordstat.util.swordutil.SwordNBTHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
@@ -23,7 +24,7 @@ public class AttachNBTEventHandler {
 	
 	public void attachNBT( ItemStack itemStack, World worldObj ) {
 
-		SwordNBTHelper swordNBTHelper = SwordStatResourceLocator.getSwordNBTHelper();
+		SwordNBTHelper swordNBTHelper = Main.SERVER_RESOURCE_LOCATOR.getSwordNBTHelper();
 		if ( itemStack.getItem() instanceof ItemSword ){
 			swordNBTHelper.attachNBT(itemStack, true, worldObj);
 		}
