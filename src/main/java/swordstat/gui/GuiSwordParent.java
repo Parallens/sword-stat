@@ -4,13 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import swordstat.util.swordutil.SwordDataHelper;
-import swordstat.util.swordutil.SwordKillsHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -18,6 +13,13 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import swordstat.gui.SwordParentButtons.BackwardTabsButton;
+import swordstat.gui.SwordParentButtons.ForwardTabsButton;
+import swordstat.gui.SwordParentButtons.SelectedTabButton;
+import swordstat.gui.SwordParentButtons.TogglePageButton;
+import swordstat.gui.SwordParentButtons.UnselectedTabButton;
+import swordstat.util.swordutil.SwordDataHelper;
+import swordstat.util.swordutil.SwordKillsHelper;
 
 @SideOnly(Side.CLIENT)
 public final class GuiSwordParent extends GuiScreen {
@@ -78,6 +80,9 @@ public final class GuiSwordParent extends GuiScreen {
 	public void initGui() {
 		
 		super.initGui();
+        final IGuiSwordPage activePage = pages.get(activePageIndex);
+        activePage.onResize(width, height);
+		System.out.println("Called initGui()");
 		widthOffset = width / 2 - X_SIZE / 2;
         heightOffset = height / 2 - Y_SIZE / 2;
         int endIndex = Math.min(startPageIndex + MAX_TABS - 1, pages.size() - 1);
@@ -108,20 +113,30 @@ public final class GuiSwordParent extends GuiScreen {
         		));
         	}
         }
-        // Add the forward and backward buttons
-        buttonList.add(new BackwardPageButton(tabsPresent,
+        // Add the forward and backward tab buttons
+        buttonList.add(new BackwardTabsButton(tabsPresent,
         		widthOffset,
         		//widthOffset + MAX_TABS * (SelectedTabButton.width + 2),
-        		heightOffset - BackwardPageButton.HEIGHT
+        		heightOffset - BackwardTabsButton.HEIGHT
         ));
-        buttonList.add(new ForwardPageButton(tabsPresent + 1,
-        		widthOffset + MAX_TABS * (SelectedTabButton.width + 2) + BackwardPageButton.WIDTH,
-        		heightOffset - ForwardPageButton.HEIGHT
+        buttonList.add(new ForwardTabsButton(tabsPresent + 1,
+        		widthOffset + MAX_TABS * (SelectedTabButton.width + 2) + BackwardTabsButton.WIDTH,
+        		heightOffset - ForwardTabsButton.HEIGHT
         ));
-        pages.get(activePageIndex).onResize(width, height);
-        // Add monster, bosses and misc button if its an entity page.
-        if ( pages.get(activePageIndex) instanceof PageEntity ){
-        	buttonList.addAll(pages.get(activePageIndex).getButtons(buttonList.size()));
+        
+        System.out.println(GuiSwordParent.Y_SIZE);
+        buttonList.addAll(activePage.getButtons(buttonList.size()));
+        
+        // Add the forward and backward page buttons if applicable
+        if ( activePage.isPageBackwardButtonVisible() ){
+        	int x = widthOffset + 3;
+        	int y =  height - heightOffset - TogglePageButton.HEIGHT - 3;        	
+        	buttonList.add(new TogglePageButton(buttonList.size(), x, y, false));
+        }
+        if ( activePage.isPageForwardButtonVisible() ){
+        	int x = widthOffset + X_SIZE - TogglePageButton.WIDTH - 3;
+        	int y =  height - heightOffset - TogglePageButton.HEIGHT - 3;
+        	buttonList.add(new TogglePageButton(buttonList.size(), x, y, true));        	
         }
 	}
 	
@@ -157,6 +172,20 @@ public final class GuiSwordParent extends GuiScreen {
 			PageEntity curPage = ((PageEntity)pages.get(activePageIndex));
 			curPage.setShowAll(!curPage.getShowAll());
 		}
+		else if ( button instanceof TogglePageButton && ((TogglePageButton) button).isFoward() ){
+			activePageIndex++;
+			if ( activePageIndex >= tabsPresent ){
+				activePageIndex = startPageIndex = 0;
+			}
+		}
+		else if ( button instanceof TogglePageButton && !((TogglePageButton) button).isFoward() ){
+			activePageIndex--;
+			if ( activePageIndex < 0 ){
+				activePageIndex = tabsPresent - 1;
+				startPageIndex = tabsPresent - MAX_TABS;
+				startPageIndex = ( startPageIndex < 0 )? 0 : startPageIndex;
+			}
+		}
 		//DEBUG
 		/*
 		System.out.println("Start page index: " + startPageIndex);
@@ -184,126 +213,5 @@ public final class GuiSwordParent extends GuiScreen {
 		
 		return false;
 	}
-	
-	private static class TabButton extends GuiButton {
-		
-		protected static final ResourceLocation buttonLoc = new ResourceLocation("minecraft:textures/gui/container/creative_inventory/tabs.png");
-		
-		protected int textureX = 0, textureY = 0;
-		protected final ItemStack foregroundItemStack;
-		protected final RenderItem itemRenderer;
-		
-		public TabButton( int buttonId, int x, int y, int widthIn, int heightIn, 
-				ItemStack foregroundItemStack, RenderItem itemRenderer ) {
-			
-			super(buttonId, x, y, widthIn, heightIn, "" );
-			this.foregroundItemStack = foregroundItemStack;
-			this.itemRenderer = itemRenderer;
-		}
-		
-		@Override
-		public void playPressSound(SoundHandler soundHandlerIn) {}
-		
-		@Override
-		public void drawButton( Minecraft mc, int mouseX, int mouseY, float partialTicks ) {
-			
-			mc.renderEngine.bindTexture(buttonLoc);
-	        drawTexturedModalRect(x, y, textureX, textureY, width, height);
-	        itemRenderer.renderItemAndEffectIntoGUI(foregroundItemStack, x + 6, y + 8);
-		}
-	}
-	
-	private static class SelectedTabButton extends TabButton {
-		
-		private static final int firstTextureX = 0, firstTextureY = 32;
-		private static final int middleTextureX = 28, middleTextureY = 32;
-		private static final int endTextureX = 140, endTextureY = 32;
-		private static final int width = 27, height = 32;		
-		private enum ButtonType {FIRST, MIDDLE, END}
-		
-		public SelectedTabButton( int buttonId, int x, int y, ButtonType buttonType,
-				ItemStack foregroundItemStack, RenderItem itemRenderer ) {
-			
-			super(buttonId, x, y, width, height, foregroundItemStack, itemRenderer);
-			switch ( buttonType ){
-				case FIRST: 
-					textureX = firstTextureX; textureY = firstTextureY;
-					break;
-				case END:
-					textureX = endTextureX; textureY = endTextureY;
-					break;
-				default:
-					textureX = middleTextureX; textureY = middleTextureY;
-					break;
-			}	
-		}
-	}
-	
-	private static class UnselectedTabButton extends TabButton {
-		
-		private static final int width = 27, height = 28;
-		private static final ResourceLocation buttonLoc = new ResourceLocation("minecraft:textures/gui/container/creative_inventory/tabs.png");
-		
-		private int textureX = 28, textureY = 0;
-		
-		public UnselectedTabButton( int buttonId, int x, int y, ItemStack foregroundItemStack,
-				RenderItem itemRenderer ) {
-			
-			super(buttonId, x, y, width, height, foregroundItemStack, itemRenderer);
-		}
-	}
-	
-	private static class ForwardPageButton extends GuiButton {
-		
-		private static final int U_TEXTURE_X = 10, U_TEXTURE_Y = 5;
-		private static final int H_TEXTURE_X = 10, H_TEXTURE_Y = 37;
-		protected static final int WIDTH = 14, HEIGHT = 22;
-		
-		private final ResourceLocation buttonLoc = new ResourceLocation("minecraft:textures/gui/resource_packs.png");
-		
-		public ForwardPageButton( int buttonId, int x, int y ) {
-			
-			super(buttonId, x, y, WIDTH, HEIGHT, "");	
-		}
-		
-		@Override
-		public void drawButton( Minecraft mc, int mouseX, int mouseY, float partialTicks ) {
-			
-			mc.renderEngine.bindTexture(buttonLoc);
-			if ( mouseX > x && mouseX < x + WIDTH &&
-					mouseY > y && mouseY < y + HEIGHT ){
-				drawTexturedModalRect(x, y, H_TEXTURE_X, H_TEXTURE_Y, width, height);
-			}
-			else {
-				drawTexturedModalRect(x, y, U_TEXTURE_X, U_TEXTURE_Y, width, height);
-			}
-		}
-	}
-	
-	private static class BackwardPageButton extends GuiButton {
-		
-		private static final int U_TEXTURE_X = 34, U_TEXTURE_Y = 5;
-		private static final int H_TEXTURE_X = 34, H_TEXTURE_Y = 37;
-		private static final int WIDTH = 14, HEIGHT = 22;
-		
-		private final ResourceLocation buttonLoc = new ResourceLocation("minecraft:textures/gui/resource_packs.png");
-		
-		public BackwardPageButton( int buttonId, int x, int y ) {
-			
-			super(buttonId, x, y, WIDTH, HEIGHT, "");	
-		}
-		
-		@Override
-		public void drawButton( Minecraft mc, int mouseX, int mouseY, float partialTicks ) {
-			
-			mc.renderEngine.bindTexture(buttonLoc);
-			if ( mouseX > x && mouseX < x + WIDTH &&
-					mouseY > y && mouseY < y + HEIGHT ){
-				drawTexturedModalRect(x, y, H_TEXTURE_X, H_TEXTURE_Y, WIDTH, HEIGHT);
-			}
-			else {
-				drawTexturedModalRect(x, y, U_TEXTURE_X, U_TEXTURE_Y, WIDTH, HEIGHT);
-			}
-		}
-	}
+
 }

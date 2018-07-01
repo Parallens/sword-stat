@@ -69,26 +69,26 @@ public class PageSword implements IGuiSwordPage {
 		infoStringsBelowImage[3] = inGameAge + (( inGameAge == 1 )? " day old" : " days old");
 	}
 	
-	//@Override
+	@Override
 	public ItemStack getIconItemStack() {
 
 		return new ItemStack(Items.DIAMOND_AXE);
 	}
 
-	//@Override
+	@Override
 	public List<GuiButton> getButtons( int buttonStartIndex ) {
 
-		return new ArrayList<GuiButton>();
+		return new ArrayList<>();
 	}
 
-	//@Override
+	@Override
 	public void onResize( int screenWidth, int screenHeight ) {
 
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
 	}
 
-	//@Override
+	@Override
 	public void drawContents( int mouseX, int mouseY, float partialTicks ) {
 
 		GL11.glPushMatrix();
@@ -144,6 +144,18 @@ public class PageSword implements IGuiSwordPage {
 			);
 		}
 		GL11.glPopMatrix();
+	}
+
+	@Override
+	public boolean isPageForwardButtonVisible() {
+		
+		return true;
+	}
+
+	@Override
+	public boolean isPageBackwardButtonVisible() {
+
+		return true;
 	}
 
 }
