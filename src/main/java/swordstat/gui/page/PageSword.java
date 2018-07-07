@@ -15,12 +15,10 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-public class PageSword implements IGuiSwordPage {
+public class PageSword extends AbstractGuiSwordPage {
 	
 	// x = 12, y = 37
 	// width = height = 70
-	private int screenWidth, screenHeight;
-	private final int parentWidth, parentHeight;
 	private final GuiScreen parent;
 	private final SwordDataHelper swordDataHelper;
 	
@@ -31,10 +29,9 @@ public class PageSword implements IGuiSwordPage {
 	
 	public PageSword( final GuiScreen parent, final int parentWidth, final int parentHeight,
 			final SwordDataHelper swordDataHelper) {
-		
+
+		super(parentWidth, parentHeight);
 		this.parent = parent;
-		this.parentWidth = parentWidth;
-		this.parentHeight = parentHeight;
 		this.swordDataHelper = swordDataHelper;
 		
 		// Initialise strings next to the rendered sword.
@@ -84,8 +81,7 @@ public class PageSword implements IGuiSwordPage {
 	@Override
 	public void onResize( int screenWidth, int screenHeight ) {
 
-		this.screenWidth = screenWidth;
-		this.screenHeight = screenHeight;
+		super.onResize(screenWidth, screenHeight);
 	}
 
 	@Override
@@ -93,16 +89,16 @@ public class PageSword implements IGuiSwordPage {
 
 		GL11.glPushMatrix();
 		
-		int widthOffset = screenWidth / 2 - parentWidth / 2;
-		int heightOffset = screenHeight / 2 - parentHeight/ 2;
+		int widthOffset = getScreenWidth() / 2 - getParentWidth() / 2;
+		int heightOffset = getScreenHeight() / 2 - getParentHeight()/ 2;
 		GL11.glScalef(2F, 2F, 1);
 		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
 		// TODO dynamic resizing
 		// Draw the title
- 		String trimmedTitle = fontRenderer.trimStringToWidth(swordDataHelper.getName(), (int) (parentWidth/2 - 5));
+ 		String trimmedTitle = fontRenderer.trimStringToWidth(swordDataHelper.getName(), (int) (getParentWidth()/2 - 5));
 		int stringLength = fontRenderer.getStringWidth(trimmedTitle);
         fontRenderer.drawStringWithShadow(
-        		trimmedTitle, (widthOffset + (parentWidth - stringLength * 2)/2)/2,
+        		trimmedTitle, (widthOffset + (getParentWidth() - stringLength * 2)/2)/2,
         		(heightOffset + 13)/2, 0xFFFFFF
         ); 
 		GL11.glScalef(3/2F, 3/2F, 1);
@@ -111,7 +107,7 @@ public class PageSword implements IGuiSwordPage {
 		);
 		parent.drawTexturedModalRect(
 				(widthOffset + 15) / 3 - 1, (heightOffset + 43) / 3 - 1,
-				parentWidth + 1, 0, 18, 18);
+				getParentWidth() + 1, 0, 18, 18);
 		parent.mc.getRenderItem().renderItemAndEffectIntoGUI(swordDataHelper.getSword(),
 				(widthOffset + 15) / 3, (heightOffset + 43) / 3);
 		
@@ -131,7 +127,7 @@ public class PageSword implements IGuiSwordPage {
 		}
 		
 		// Now draw the strings below the rendered image.
-		final int maxBelowImageLength = parentWidth - 5;
+		final int maxBelowImageLength = getParentWidth() - 5;
 		for ( int i = 0; i < infoStringsBelowImage.length; i++ ){
 			fontRenderer.drawStringWithShadow(
 				titleStringsBelowImage[i], widthOffset + 8, heightOffset + 96 + i * 13, 
@@ -160,7 +156,7 @@ public class PageSword implements IGuiSwordPage {
 
 	@Override
 	public void actionPerformed(GuiButton button) {
-		// TODO Auto-generated method stub
+
 		
 	}
 

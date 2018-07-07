@@ -50,7 +50,7 @@ public final class GuiSwordParent extends GuiScreen {
 		// Initialise all of the pages which correspond to tabs
 		pages.appendPage(new PageSword(this, X_SIZE, Y_SIZE, swordDataHelper));
 		// Add the vanilla tab
-		pages.appendPage(new PageEntity(swordKillsHelper.getEntityStringsFromMod(swordKillsHelper.getVanillaString()), swordKillsHelper.getModCreativeTab(swordKillsHelper.getVanillaString()), swordKillsHelper, width, height){
+		pages.appendPage(new PageEntity(swordKillsHelper.getEntityStringsFromMod(swordKillsHelper.getVanillaString()), swordKillsHelper.getModCreativeTab(swordKillsHelper.getVanillaString()), swordKillsHelper, X_SIZE, Y_SIZE){
 				
 			@Override
 			public ItemStack getIconItemStack() {
@@ -67,7 +67,7 @@ public final class GuiSwordParent extends GuiScreen {
 		for ( String modString : modStrings ){
 			if ( modString.equals(swordKillsHelper.getVanillaString()) ) continue;
 			CreativeTabs inferedCreativeTab = swordKillsHelper.getModCreativeTab(modString);
-			pages.appendPage(new PageEntity(swordKillsHelper.getEntityStringsFromMod(modString), inferedCreativeTab, swordKillsHelper, width, height));
+			pages.appendPage(new PageEntity(swordKillsHelper.getEntityStringsFromMod(modString), inferedCreativeTab, swordKillsHelper, X_SIZE, Y_SIZE));
 		}
 	}
 	

@@ -1,21 +1,19 @@
 package swordstat.gui.page;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import swordstat.gui.GuiEntityScrollingList;
-import swordstat.gui.GuiSwordParent;
-import swordstat.util.swordutil.SwordKillsHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import swordstat.gui.GuiEntityScrollingList;
+import swordstat.util.swordutil.SwordKillsHelper;
 
-public class PageEntity implements IGuiSwordPage {
+public class PageEntity extends AbstractGuiSwordPage {
 	
 	private final Set<String> entityStrings;
 	private final Set<String> bossStrings = new TreeSet<>();
@@ -26,17 +24,15 @@ public class PageEntity implements IGuiSwordPage {
 	private GuiEntityScrollingList entityScrollingList;
 	// static for convenience
 	private static SwordKillsHelper.EntityType activeEntityType = SwordKillsHelper.EntityType.MONSTER;
-	private int screenWidth, screenHeight;
-	//private final ItemStack iconItemStack;
 	
 	public PageEntity( final Set<String> entityStrings, CreativeTabs inferedCreativeTab,
-			final SwordKillsHelper swordKillsHelper, int screenWidth, int screenHeight ) {
+			final SwordKillsHelper swordKillsHelper, int parentWidth, int parentHeight ) {
 		
+		super(parentWidth, parentHeight);
 		this.entityStrings = entityStrings;
 		this.swordKillsHelper = swordKillsHelper;
-		this.screenHeight = screenHeight;
-		this.screenWidth = screenWidth;
 		this.inferedCreativeTab = inferedCreativeTab;
+		
 		// Sort the entity strings into monsters, bosses and passives/misc
 		for ( String entityString : entityStrings ){
 			if ( SwordKillsHelper.EntityType.BOSS.equals(swordKillsHelper.getEntityType(entityString)) ){
@@ -49,18 +45,13 @@ public class PageEntity implements IGuiSwordPage {
 				passiveStrings.add(entityString);
 			}
 		}
-		entityScrollingList = new GuiEntityScrollingList(
-				GuiSwordParent.X_SIZE, GuiSwordParent.Y_SIZE, screenWidth, screenHeight,
-				swordKillsHelper, entityStrings
-		);
 		
 	}
 	
 	@Override
 	public void onResize( int screenWidth, int screenHeight ) {
 		
-		this.screenWidth = screenWidth;
-		this.screenHeight = screenHeight;
+		super.onResize(screenWidth, screenHeight);
 		Set<String> chosenEntityStringSet = entityStrings;
 		if ( activeEntityType.equals(SwordKillsHelper.EntityType.MONSTER) ){
 			chosenEntityStringSet = monsterStrings;
@@ -72,26 +63,25 @@ public class PageEntity implements IGuiSwordPage {
 			chosenEntityStringSet = passiveStrings;
 		}
 		entityScrollingList = new GuiEntityScrollingList(
-				GuiSwordParent.X_SIZE, GuiSwordParent.Y_SIZE, screenWidth, screenHeight,
+				getParentWidth(), getParentHeight(), screenWidth, screenHeight,
 				swordKillsHelper, chosenEntityStringSet
 		);
 	}
 	
 	@Override
 	public void drawContents( int mouseX, int mouseY, float partialTicks ) {
-		
-		//System.out.println(Arrays.toString(entityStrings.toArray()));
-		//TODO remove references to parent.
+
+		if ( entityScrollingList == null ){
+			entityScrollingList = new GuiEntityScrollingList(
+					getParentWidth(), getParentHeight(), getScreenWidth(), getScreenHeight(),
+					swordKillsHelper, entityStrings
+			);
+		}
 		entityScrollingList.drawScreen(mouseX, mouseY, partialTicks);
-		/*
-		GL11.glPushMatrix();
-		GL11.glScalef(1.5F, 1.5F, 1);
-		*/
 		Minecraft.getMinecraft().fontRenderer.drawString(
-				this.getTitleString(), (screenWidth / 2 - GuiSwordParent.X_SIZE / 2 + 10),
-				(screenHeight / 2 + GuiSwordParent.Y_SIZE / 2 - 17), 0x404040
+				this.getTitleString(), (getScreenWidth() / 2 - getParentWidth() / 2 + 10),
+				(getScreenHeight() / 2 + getParentHeight() / 2 - 17), 0x404040
 		);
-		//GL11.glPopMatrix();
 		Minecraft.getMinecraft().fontRenderer.drawString(
 				"", 0, 0, 0xFFFFFF
 		);
@@ -125,33 +115,33 @@ public class PageEntity implements IGuiSwordPage {
 		final int monsterWidth = 60, bossWidth = 50, passiveWidth = 35, showAllWidth = 60;
 		final int xOffset = 9, yOffset = 7;//GuiSwordParent.Y_SIZE - buttonHeight - 5;
 		final int spacing = 3;
-		List<GuiButton> buttons = new ArrayList<GuiButton>();
+
 		// TODO draw shape around currently selected menu
-		buttons.add(new GuiButton(
+		super.getButtons(buttonStartIndex).add(new GuiButton(
 				buttonStartIndex,
-				screenWidth / 2 - GuiSwordParent.X_SIZE / 2 + xOffset,
-				screenHeight / 2 - GuiSwordParent.Y_SIZE / 2 + yOffset,
+				getScreenWidth() / 2 - getParentWidth() / 2 + xOffset,
+				getScreenHeight() / 2 - getParentHeight() / 2 + yOffset,
 				monsterWidth, buttonHeight, "Monsters"
 		));
-		buttons.add(new GuiButton(
+		super.getButtons(buttonStartIndex).add(new GuiButton(
 				buttonStartIndex + 1,
-				screenWidth / 2 - GuiSwordParent.X_SIZE / 2 + monsterWidth + xOffset + spacing,
-				screenHeight / 2 - GuiSwordParent.Y_SIZE / 2 + yOffset,
+				getScreenWidth() / 2 - getParentWidth() / 2 + monsterWidth + xOffset + spacing,
+				getScreenHeight() / 2 - getParentHeight() / 2 + yOffset,
 				bossWidth, buttonHeight, "Bosses"
 		));
-		buttons.add(new GuiButton(
+		super.getButtons(buttonStartIndex).add(new GuiButton(
 				buttonStartIndex + 2,
-				screenWidth / 2 - GuiSwordParent.X_SIZE / 2 + monsterWidth + bossWidth + xOffset + spacing * 2,
-				screenHeight / 2 - GuiSwordParent.Y_SIZE / 2 + yOffset,
+				getScreenWidth() / 2 - getParentWidth() / 2 + monsterWidth + bossWidth + xOffset + spacing * 2,
+				getScreenHeight() / 2 - getParentHeight() / 2 + yOffset,
 				passiveWidth, buttonHeight, "Misc"
 		));
-		buttons.add(new GuiButton(
+		super.getButtons(buttonStartIndex).add(new GuiButton(
 				buttonStartIndex + 3,
-				screenWidth / 2 - GuiSwordParent.X_SIZE / 2 + monsterWidth + bossWidth + xOffset + spacing * 2 - (showAllWidth - passiveWidth),
-				(screenHeight / 2 + GuiSwordParent.Y_SIZE / 2 - 25),
+				getScreenWidth() / 2 - getParentWidth() / 2 + monsterWidth + bossWidth + xOffset + spacing * 2 - (showAllWidth - passiveWidth),
+				(getScreenHeight() / 2 + getParentHeight() / 2 - 25),
 				showAllWidth, buttonHeight, "Show: " + (( GuiEntityScrollingList.getUseFiltered() )? "kills" : "all") 
 		));
-		return buttons;
+		return super.getButtons(buttonStartIndex);
 	}
 	
 	public boolean getShowAll() {
@@ -167,7 +157,7 @@ public class PageEntity implements IGuiSwordPage {
 	public void setCurrentEntityType( SwordKillsHelper.EntityType entityType ) {
 		
 		this.activeEntityType = entityType;
-		onResize(screenWidth, screenHeight);
+		onResize(getScreenWidth(), getScreenHeight());
 	}
 
 	@Override
