@@ -18,6 +18,9 @@ import swordstat.gui.SwordParentButtons.ForwardTabsButton;
 import swordstat.gui.SwordParentButtons.SelectedTabButton;
 import swordstat.gui.SwordParentButtons.TogglePageButton;
 import swordstat.gui.SwordParentButtons.UnselectedTabButton;
+import swordstat.gui.page.IGuiSwordPage;
+import swordstat.gui.page.PageEntity;
+import swordstat.gui.page.PageSword;
 import swordstat.util.swordutil.SwordDataHelper;
 import swordstat.util.swordutil.SwordKillsHelper;
 
@@ -27,12 +30,7 @@ public final class GuiSwordParent extends GuiScreen {
 	public final static int X_SIZE = 175, Y_SIZE = 165;
 	/** Represents the x and y coordinates of the top left corner of the GUI. **/
 	private int widthOffset, heightOffset;
-	private final World world;
-	/** Encapsulates data about the sword, except the specific mob types the sword has killed. **/
-	private final SwordDataHelper swordDataHelper;
-	/** Encapsulates information about the specific mob types the sword has killed. **/
-	private final SwordKillsHelper swordKillsHelper;
-	
+
 	/** List of (both visible and invisible) pages. **/
 	private List<IGuiSwordPage> pages = new ArrayList<IGuiSwordPage>();
 	/** Maximum number of tabs that can be rendered on the GUI at any given moment. **/
@@ -48,9 +46,6 @@ public final class GuiSwordParent extends GuiScreen {
 			SwordKillsHelper swordKillsHelper ) {
 		
 		super();
-		this.world = world;
-		this.swordDataHelper = swordDataHelper;
-		this.swordKillsHelper = swordKillsHelper;
 		Set<String> modStrings = swordKillsHelper.getModStrings();
 		// Initialise all of the pages which correspond to tabs
 		pages.add(new PageSword(this, X_SIZE, Y_SIZE, swordDataHelper));
@@ -82,7 +77,6 @@ public final class GuiSwordParent extends GuiScreen {
 		super.initGui();
         final IGuiSwordPage activePage = pages.get(activePageIndex);
         activePage.onResize(width, height);
-		System.out.println("Called initGui()");
 		widthOffset = width / 2 - X_SIZE / 2;
         heightOffset = height / 2 - Y_SIZE / 2;
         int endIndex = Math.min(startPageIndex + MAX_TABS - 1, pages.size() - 1);
@@ -124,7 +118,6 @@ public final class GuiSwordParent extends GuiScreen {
         		heightOffset - ForwardTabsButton.HEIGHT
         ));
         
-        System.out.println(GuiSwordParent.Y_SIZE);
         buttonList.addAll(activePage.getButtons(buttonList.size()));
         
         // Add the forward and backward page buttons if applicable
@@ -177,14 +170,14 @@ public final class GuiSwordParent extends GuiScreen {
 			if ( activePageIndex >= tabsPresent ){
 				activePageIndex = startPageIndex = 0;
 			}
+			startPageIndex = activePageIndex - activePageIndex % MAX_TABS;
 		}
 		else if ( button instanceof TogglePageButton && !((TogglePageButton) button).isFoward() ){
 			activePageIndex--;
 			if ( activePageIndex < 0 ){
 				activePageIndex = tabsPresent - 1;
-				startPageIndex = tabsPresent - MAX_TABS;
-				startPageIndex = ( startPageIndex < 0 )? 0 : startPageIndex;
 			}
+			startPageIndex = activePageIndex - activePageIndex % MAX_TABS;
 		}
 		//DEBUG
 		/*

@@ -1,4 +1,4 @@
-package swordstat.gui;
+package swordstat.gui.page;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -156,6 +156,12 @@ public class PageSword implements IGuiSwordPage {
 	public boolean isPageBackwardButtonVisible() {
 
 		return true;
+	}
+
+	@Override
+	public void actionPerformed(GuiButton button) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

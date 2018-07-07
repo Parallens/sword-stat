@@ -1,10 +1,12 @@
-package swordstat.gui;
+package swordstat.gui.page;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import swordstat.gui.GuiEntityScrollingList;
+import swordstat.gui.GuiSwordParent;
 import swordstat.util.swordutil.SwordKillsHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -178,5 +180,11 @@ public class PageEntity implements IGuiSwordPage {
 	public boolean isPageBackwardButtonVisible() {
 
 		return false;
+	}
+
+	@Override
+	public void actionPerformed(GuiButton button) {
+		// TODO Auto-generated method stub
+		
 	}
 }
