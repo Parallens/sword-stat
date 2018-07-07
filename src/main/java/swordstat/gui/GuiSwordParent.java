@@ -1,7 +1,5 @@
 package swordstat.gui;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import net.minecraft.client.gui.GuiButton;
@@ -19,6 +17,7 @@ import swordstat.gui.SwordParentButtons.SelectedTabButton;
 import swordstat.gui.SwordParentButtons.TogglePageButton;
 import swordstat.gui.SwordParentButtons.UnselectedTabButton;
 import swordstat.gui.page.IGuiSwordPage;
+import swordstat.gui.page.ISwordPages;
 import swordstat.gui.page.PageEntity;
 import swordstat.gui.page.PageSword;
 import swordstat.util.swordutil.SwordDataHelper;
@@ -31,8 +30,8 @@ public final class GuiSwordParent extends GuiScreen {
 	/** Represents the x and y coordinates of the top left corner of the GUI. **/
 	private int widthOffset, heightOffset;
 
-	/** List of (both visible and invisible) pages. **/
-	private List<IGuiSwordPage> pages = new ArrayList<IGuiSwordPage>();
+	/** Object encapsulating sword pages.*/
+	private ISwordPages pages;
 	/** Maximum number of tabs that can be rendered on the GUI at any given moment. **/
 	private final static int MAX_TABS = 5;
 	/** Index of the page which is currently selected and being rendered. **/
@@ -42,15 +41,16 @@ public final class GuiSwordParent extends GuiScreen {
 	/** How many tabs are currently being displayed. **/
 	private int tabsPresent;
 	
-	public GuiSwordParent( World world, SwordDataHelper swordDataHelper,
+	public GuiSwordParent( ISwordPages pages, World world, SwordDataHelper swordDataHelper,
 			SwordKillsHelper swordKillsHelper ) {
 		
 		super();
+		this.pages = pages;
 		Set<String> modStrings = swordKillsHelper.getModStrings();
 		// Initialise all of the pages which correspond to tabs
-		pages.add(new PageSword(this, X_SIZE, Y_SIZE, swordDataHelper));
+		pages.appendPage(new PageSword(this, X_SIZE, Y_SIZE, swordDataHelper));
 		// Add the vanilla tab
-		pages.add(new PageEntity(swordKillsHelper.getEntityStringsFromMod(swordKillsHelper.getVanillaString()), swordKillsHelper.getModCreativeTab(swordKillsHelper.getVanillaString()), swordKillsHelper, width, height){
+		pages.appendPage(new PageEntity(swordKillsHelper.getEntityStringsFromMod(swordKillsHelper.getVanillaString()), swordKillsHelper.getModCreativeTab(swordKillsHelper.getVanillaString()), swordKillsHelper, width, height){
 				
 			@Override
 			public ItemStack getIconItemStack() {
@@ -67,7 +67,7 @@ public final class GuiSwordParent extends GuiScreen {
 		for ( String modString : modStrings ){
 			if ( modString.equals(swordKillsHelper.getVanillaString()) ) continue;
 			CreativeTabs inferedCreativeTab = swordKillsHelper.getModCreativeTab(modString);
-			pages.add(new PageEntity(swordKillsHelper.getEntityStringsFromMod(modString), inferedCreativeTab, swordKillsHelper, width, height));
+			pages.appendPage(new PageEntity(swordKillsHelper.getEntityStringsFromMod(modString), inferedCreativeTab, swordKillsHelper, width, height));
 		}
 	}
 	
@@ -75,7 +75,7 @@ public final class GuiSwordParent extends GuiScreen {
 	public void initGui() {
 		
 		super.initGui();
-        final IGuiSwordPage activePage = pages.get(activePageIndex);
+        final IGuiSwordPage activePage = pages.getPageAt(activePageIndex);
         activePage.onResize(width, height);
 		widthOffset = width / 2 - X_SIZE / 2;
         heightOffset = height / 2 - Y_SIZE / 2;
@@ -95,7 +95,7 @@ public final class GuiSwordParent extends GuiScreen {
         				i - startPageIndex,
         				15 + widthOffset + (i - startPageIndex) * (SelectedTabButton.width + 2),
         				heightOffset - SelectedTabButton.height + 4, buttonType,
-        				pages.get(i).getIconItemStack(), itemRender
+        				pages.getPageAt(i).getIconItemStack(), itemRender
         		));
         	} 
         	else {
@@ -103,7 +103,7 @@ public final class GuiSwordParent extends GuiScreen {
         				i - startPageIndex,
         				15 + widthOffset + (i - startPageIndex) * (UnselectedTabButton.width + 2),
         				heightOffset - UnselectedTabButton.height,
-        				pages.get(i).getIconItemStack(), itemRender
+        				pages.getPageAt(i).getIconItemStack(), itemRender
         		));
         	}
         }
@@ -148,21 +148,21 @@ public final class GuiSwordParent extends GuiScreen {
 			// It's the forward button
 			startPageIndex += MAX_TABS;
 		}
-		else if ( pages.get(activePageIndex) instanceof PageEntity && index == tabsPresent + 2 ){
+		else if ( pages.getPageAt(activePageIndex) instanceof PageEntity && index == tabsPresent + 2 ){
 			// It's the monster button on one of the entity pages
-			((PageEntity)pages.get(activePageIndex)).setCurrentEntityType(SwordKillsHelper.EntityType.MONSTER);
+			((PageEntity)pages.getPageAt(activePageIndex)).setCurrentEntityType(SwordKillsHelper.EntityType.MONSTER);
 		}
-		else if ( pages.get(activePageIndex) instanceof PageEntity && index == tabsPresent + 3 ){
+		else if ( pages.getPageAt(activePageIndex) instanceof PageEntity && index == tabsPresent + 3 ){
 			// It's the boss button on one of the entity pages
-			((PageEntity)pages.get(activePageIndex)).setCurrentEntityType(SwordKillsHelper.EntityType.BOSS);
+			((PageEntity)pages.getPageAt(activePageIndex)).setCurrentEntityType(SwordKillsHelper.EntityType.BOSS);
 		}
-		else if ( pages.get(activePageIndex) instanceof PageEntity && index == tabsPresent + 4 ){
+		else if ( pages.getPageAt(activePageIndex) instanceof PageEntity && index == tabsPresent + 4 ){
 			// It's the passive button on one of the entity pages
-			((PageEntity)pages.get(activePageIndex)).setCurrentEntityType(SwordKillsHelper.EntityType.PASSIVE);
+			((PageEntity)pages.getPageAt(activePageIndex)).setCurrentEntityType(SwordKillsHelper.EntityType.PASSIVE);
 		}
-		else if ( pages.get(activePageIndex) instanceof PageEntity && index == tabsPresent + 5 ){
+		else if ( pages.getPageAt(activePageIndex) instanceof PageEntity && index == tabsPresent + 5 ){
 			// The show all / only kills button has been toggled
-			PageEntity curPage = ((PageEntity)pages.get(activePageIndex));
+			PageEntity curPage = ((PageEntity)pages.getPageAt(activePageIndex));
 			curPage.setShowAll(!curPage.getShowAll());
 		}
 		else if ( button instanceof TogglePageButton && ((TogglePageButton) button).isFoward() ){
@@ -197,7 +197,7 @@ public final class GuiSwordParent extends GuiScreen {
 		);
         drawTexturedModalRect(widthOffset, heightOffset, 0, 0, X_SIZE, Y_SIZE);
 		// Render the active child screen
-        pages.get(activePageIndex).drawContents(mouseX, mouseY, partialTicks);
+        pages.getPageAt(activePageIndex).drawContents(mouseX, mouseY, partialTicks);
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
 	

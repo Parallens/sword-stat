@@ -9,6 +9,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import swordstat.Main;
+import swordstat.gui.page.ArrayListSwordPages;
+import swordstat.gui.page.ISwordPages;
 import swordstat.init.EntitySorter.EntitySorting;
 import swordstat.util.swordutil.SwordDataHelper;
 import swordstat.util.swordutil.SwordKillsHelper;
@@ -57,8 +59,9 @@ public class GuiHandler implements IGuiHandler {
 		SwordKillsHelper swordKillsHelper = new SwordKillsHelper(
 				tagCompoundInUse.getCompoundTag(Main.MODID), entitySorting
 		);
+		ISwordPages swordPages = new ArrayListSwordPages();
 		if ( ID == GuiEnum.SWORD_MENU.ordinal() ){
-			return new GuiSwordParent(world, swordDataHelper, swordKillsHelper);
+			return new GuiSwordParent(swordPages, world, swordDataHelper, swordKillsHelper);
 		}
 		return null;
 	}
