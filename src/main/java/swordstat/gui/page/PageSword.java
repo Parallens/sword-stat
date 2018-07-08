@@ -19,7 +19,6 @@ public class PageSword extends AbstractGuiSwordPage {
 	
 	// x = 12, y = 37
 	// width = height = 70
-	private final GuiScreen parent;
 	private final SwordDataHelper swordDataHelper;
 	
 	private final String[] titleStringsNextToImage = new String[4];
@@ -27,11 +26,9 @@ public class PageSword extends AbstractGuiSwordPage {
 	private final String[] infoStringsNextToImage = new String[4];
 	private final String[] infoStringsBelowImage = new String[4];
 	
-	public PageSword( final GuiScreen parent, final int parentWidth, final int parentHeight,
-			final SwordDataHelper swordDataHelper) {
+	public PageSword( final int parentWidth, final int parentHeight, final SwordDataHelper swordDataHelper) {
 
 		super(parentWidth, parentHeight);
-		this.parent = parent;
 		this.swordDataHelper = swordDataHelper;
 		
 		// Initialise strings next to the rendered sword.
@@ -73,7 +70,7 @@ public class PageSword extends AbstractGuiSwordPage {
 	}
 
 	@Override
-	public List<GuiButton> getButtons( int buttonStartIndex ) {
+	public List<GuiButton> recreateButtons( int buttonStartIndex ) {
 
 		return new ArrayList<>();
 	}
@@ -85,7 +82,7 @@ public class PageSword extends AbstractGuiSwordPage {
 	}
 
 	@Override
-	public void drawContents( int mouseX, int mouseY, float partialTicks ) {
+	public void drawContents( final GuiScreen parent, int mouseX, int mouseY, float partialTicks ) {
 
 		GL11.glPushMatrix();
 		

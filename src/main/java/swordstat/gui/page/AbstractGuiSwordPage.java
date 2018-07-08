@@ -32,10 +32,17 @@ public abstract class AbstractGuiSwordPage implements IGuiSwordPage {
 	}
 
 	@Override
-	public List<GuiButton> getButtons( int buttonStartIndex ) {
+	public List<GuiButton> getButtons() {
 
 		return buttons;
-	}	
+	}
+	
+	@Override
+	public List<GuiButton> recreateButtons( int buttonStartIndex ) {
+		
+		buttons.clear();
+		return buttons;
+	}
 
 	public int getParentWidth() {
 		

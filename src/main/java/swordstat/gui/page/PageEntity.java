@@ -6,6 +6,7 @@ import java.util.TreeSet;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
@@ -69,7 +70,7 @@ public class PageEntity extends AbstractGuiSwordPage {
 	}
 	
 	@Override
-	public void drawContents( int mouseX, int mouseY, float partialTicks ) {
+	public void drawContents( final GuiScreen parent, int mouseX, int mouseY, float partialTicks ) {
 
 		if ( entityScrollingList == null ){
 			entityScrollingList = new GuiEntityScrollingList(
@@ -109,39 +110,40 @@ public class PageEntity extends AbstractGuiSwordPage {
 	}
 	
 	@Override
-	public List<GuiButton> getButtons( int buttonStartIndex ) {
+	public List<GuiButton> recreateButtons( int buttonStartIndex ) {
 		
+		super.recreateButtons(buttonStartIndex);
 		final int buttonHeight = 20;
 		final int monsterWidth = 60, bossWidth = 50, passiveWidth = 35, showAllWidth = 60;
 		final int xOffset = 9, yOffset = 7;//GuiSwordParent.Y_SIZE - buttonHeight - 5;
 		final int spacing = 3;
 
 		// TODO draw shape around currently selected menu
-		super.getButtons(buttonStartIndex).add(new GuiButton(
+		getButtons().add(new GuiButton(
 				buttonStartIndex,
 				getScreenWidth() / 2 - getParentWidth() / 2 + xOffset,
 				getScreenHeight() / 2 - getParentHeight() / 2 + yOffset,
 				monsterWidth, buttonHeight, "Monsters"
 		));
-		super.getButtons(buttonStartIndex).add(new GuiButton(
+		getButtons().add(new GuiButton(
 				buttonStartIndex + 1,
 				getScreenWidth() / 2 - getParentWidth() / 2 + monsterWidth + xOffset + spacing,
 				getScreenHeight() / 2 - getParentHeight() / 2 + yOffset,
 				bossWidth, buttonHeight, "Bosses"
 		));
-		super.getButtons(buttonStartIndex).add(new GuiButton(
+		getButtons().add(new GuiButton(
 				buttonStartIndex + 2,
 				getScreenWidth() / 2 - getParentWidth() / 2 + monsterWidth + bossWidth + xOffset + spacing * 2,
 				getScreenHeight() / 2 - getParentHeight() / 2 + yOffset,
 				passiveWidth, buttonHeight, "Misc"
 		));
-		super.getButtons(buttonStartIndex).add(new GuiButton(
+		getButtons().add(new GuiButton(
 				buttonStartIndex + 3,
 				getScreenWidth() / 2 - getParentWidth() / 2 + monsterWidth + bossWidth + xOffset + spacing * 2 - (showAllWidth - passiveWidth),
 				(getScreenHeight() / 2 + getParentHeight() / 2 - 25),
 				showAllWidth, buttonHeight, "Show: " + (( GuiEntityScrollingList.getUseFiltered() )? "kills" : "all") 
 		));
-		return super.getButtons(buttonStartIndex);
+		return getButtons();
 	}
 	
 	public boolean getShowAll() {
@@ -173,8 +175,24 @@ public class PageEntity extends AbstractGuiSwordPage {
 	}
 
 	@Override
-	public void actionPerformed(GuiButton button) {
-		// TODO Auto-generated method stub
-		
+	public void actionPerformed( GuiButton button ) {
+
+		int index = getButtons().indexOf(button);
+		if ( index == 0 ){
+			// It's the monster button
+			setCurrentEntityType(SwordKillsHelper.EntityType.MONSTER);
+		}
+		else if ( index == 1 ){
+			// It's the boss button
+			setCurrentEntityType(SwordKillsHelper.EntityType.BOSS);
+		}
+		else if ( index == 2 ){
+			// It's the passive button 
+			setCurrentEntityType(SwordKillsHelper.EntityType.PASSIVE);
+		}
+		else if ( index == 3 ){
+			// The show all / only kills button has been toggled
+			setShowAll(!getShowAll());
+		}
 	}
 }

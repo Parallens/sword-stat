@@ -48,7 +48,7 @@ public final class GuiSwordParent extends GuiScreen {
 		this.pages = pages;
 		Set<String> modStrings = swordKillsHelper.getModStrings();
 		// Initialise all of the pages which correspond to tabs
-		pages.appendPage(new PageSword(this, X_SIZE, Y_SIZE, swordDataHelper));
+		pages.appendPage(new PageSword(X_SIZE, Y_SIZE, swordDataHelper));
 		// Add the vanilla tab
 		pages.appendPage(new PageEntity(swordKillsHelper.getEntityStringsFromMod(swordKillsHelper.getVanillaString()), swordKillsHelper.getModCreativeTab(swordKillsHelper.getVanillaString()), swordKillsHelper, X_SIZE, Y_SIZE){
 				
@@ -118,7 +118,7 @@ public final class GuiSwordParent extends GuiScreen {
         		heightOffset - ForwardTabsButton.HEIGHT
         ));
         
-        buttonList.addAll(activePage.getButtons(buttonList.size()));
+        buttonList.addAll(activePage.recreateButtons(buttonList.size()));
         
         // Add the forward and backward page buttons if applicable
         if ( activePage.isPageBackwardButtonVisible() ){
@@ -148,23 +148,6 @@ public final class GuiSwordParent extends GuiScreen {
 			// It's the forward button
 			startPageIndex += MAX_TABS;
 		}
-		else if ( pages.getPageAt(activePageIndex) instanceof PageEntity && index == tabsPresent + 2 ){
-			// It's the monster button on one of the entity pages
-			((PageEntity)pages.getPageAt(activePageIndex)).setCurrentEntityType(SwordKillsHelper.EntityType.MONSTER);
-		}
-		else if ( pages.getPageAt(activePageIndex) instanceof PageEntity && index == tabsPresent + 3 ){
-			// It's the boss button on one of the entity pages
-			((PageEntity)pages.getPageAt(activePageIndex)).setCurrentEntityType(SwordKillsHelper.EntityType.BOSS);
-		}
-		else if ( pages.getPageAt(activePageIndex) instanceof PageEntity && index == tabsPresent + 4 ){
-			// It's the passive button on one of the entity pages
-			((PageEntity)pages.getPageAt(activePageIndex)).setCurrentEntityType(SwordKillsHelper.EntityType.PASSIVE);
-		}
-		else if ( pages.getPageAt(activePageIndex) instanceof PageEntity && index == tabsPresent + 5 ){
-			// The show all / only kills button has been toggled
-			PageEntity curPage = ((PageEntity)pages.getPageAt(activePageIndex));
-			curPage.setShowAll(!curPage.getShowAll());
-		}
 		else if ( button instanceof TogglePageButton && ((TogglePageButton) button).isFoward() ){
 			activePageIndex++;
 			if ( activePageIndex >= tabsPresent ){
@@ -179,6 +162,8 @@ public final class GuiSwordParent extends GuiScreen {
 			}
 			startPageIndex = activePageIndex - activePageIndex % MAX_TABS;
 		}
+		pages.getPageAt(activePageIndex).actionPerformed(button);
+		
 		//DEBUG
 		/*
 		System.out.println("Start page index: " + startPageIndex);
@@ -197,7 +182,7 @@ public final class GuiSwordParent extends GuiScreen {
 		);
         drawTexturedModalRect(widthOffset, heightOffset, 0, 0, X_SIZE, Y_SIZE);
 		// Render the active child screen
-        pages.getPageAt(activePageIndex).drawContents(mouseX, mouseY, partialTicks);
+        pages.getPageAt(activePageIndex).drawContents(this, mouseX, mouseY, partialTicks);
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
 	
