@@ -23,7 +23,7 @@ public interface IGuiSwordPage {
 	void actionPerformed( GuiButton button );
 	
 	// Analogous to initGui()
-	void onResize( int screenWidth, int screenHeight );
+	void onResize( int screenWidth, int screenHeight, int parentWidth, int parentHeight );
 	
 	// Analogous to drawScreen()
 	void drawContents( GuiScreen parent, int mouseX, int mouseY, float partialTicks );

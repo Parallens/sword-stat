@@ -18,7 +18,11 @@ import swordstat.util.ServerResourceLocator;
 import swordstat.util.SwordStatResourceLocator;
 
 
-@Mod(modid = SwordStat.MODID, name = SwordStat.MODNAME, version = SwordStat.VERSION, acceptedMinecraftVersions = "[1.12.2]")
+@Mod(modid = SwordStat.MODID,
+	name = SwordStat.MODNAME,
+	version = SwordStat.VERSION,
+	acceptedMinecraftVersions = "[1.12.2]",
+	dependencies = "after:tconstruct")
 public class SwordStat {
 	
 	public static final String MODID = "paras_sword_stat";
@@ -38,7 +42,7 @@ public class SwordStat {
 	
 	@SidedProxy(
 			clientSide = "swordstat.proxy.ClientProxy",
-			serverSide = "swordstat.proxy.ServerProxy"
+			serverSide = "swordstat.proxy.CommonProxy"
 	)
 	public static CommonProxy proxy;
     	

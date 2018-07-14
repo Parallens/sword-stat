@@ -1,6 +1,7 @@
 package swordstat.init;
 
 import net.minecraftforge.common.MinecraftForge;
+import swordstat.event.AddStandardPagesToGuiEventHandler;
 import swordstat.event.AttachNBTEventHandler;
 import swordstat.event.KeyInputEventHandler;
 import swordstat.event.LivingDeathEventHandler;
@@ -20,5 +21,6 @@ public class SwordStatEventHandlers {
 		
 		// register event handlers here.
 		MinecraftForge.EVENT_BUS.register(new KeyInputEventHandler());
+		MinecraftForge.EVENT_BUS.register(new AddStandardPagesToGuiEventHandler());
 	}
 }

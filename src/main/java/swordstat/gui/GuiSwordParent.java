@@ -1,10 +1,7 @@
 package swordstat.gui;
 
-import java.util.Set;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -16,10 +13,9 @@ import swordstat.gui.SwordParentButtons.ForwardTabsButton;
 import swordstat.gui.SwordParentButtons.SelectedTabButton;
 import swordstat.gui.SwordParentButtons.TogglePageButton;
 import swordstat.gui.SwordParentButtons.UnselectedTabButton;
+import swordstat.gui.page.AbstractGuiSwordPage;
 import swordstat.gui.page.IGuiSwordPage;
 import swordstat.gui.page.ISwordPages;
-import swordstat.gui.page.PageEntity;
-import swordstat.gui.page.PageSword;
 import swordstat.util.swordutil.SwordDataHelper;
 import swordstat.util.swordutil.SwordKillsHelper;
 
@@ -46,28 +42,39 @@ public final class GuiSwordParent extends GuiScreen {
 		
 		super();
 		this.pages = pages;
-		Set<String> modStrings = swordKillsHelper.getModStrings();
-		// Initialise all of the pages which correspond to tabs
-		pages.appendPage(new PageSword(X_SIZE, Y_SIZE, swordDataHelper));
-		// Add the vanilla tab
-		pages.appendPage(new PageEntity(swordKillsHelper.getEntityStringsFromMod(swordKillsHelper.getVanillaString()), swordKillsHelper.getModCreativeTab(swordKillsHelper.getVanillaString()), swordKillsHelper, X_SIZE, Y_SIZE){
+		if ( pages.size() == 0 ){
+			pages.appendPage(new AbstractGuiSwordPage() {
+
+				@Override
+				public ItemStack getIconItemStack() {
+					
+					return new ItemStack(Items.ITEM_FRAME);
+				}
+
+				@Override
+				public void actionPerformed(GuiButton button) {}
+
+				@Override
+				public void drawContents(GuiScreen parent, int mouseX,
+						int mouseY, float partialTicks) {}
+
+				@Override
+				public boolean isPageForwardButtonVisible() {
+					
+					return true;
+				}
+
+				@Override
+				public boolean isPageBackwardButtonVisible() {
+
+					return true;
+				}
 				
-			@Override
-			public ItemStack getIconItemStack() {
-			
-				return new ItemStack(Items.ENDER_PEARL);
-			}
-			
-			@Override
-			public String getTitleString() {
-				
-				return "Vanilla";
-			}
-		});
-		for ( String modString : modStrings ){
-			if ( modString.equals(swordKillsHelper.getVanillaString()) ) continue;
-			CreativeTabs inferedCreativeTab = swordKillsHelper.getModCreativeTab(modString);
-			pages.appendPage(new PageEntity(swordKillsHelper.getEntityStringsFromMod(modString), inferedCreativeTab, swordKillsHelper, X_SIZE, Y_SIZE));
+			});
+		}
+		for ( IGuiSwordPage page : pages ){
+			// initialise to correct height
+			page.onResize(width, height, X_SIZE, Y_SIZE);
 		}
 	}
 	
@@ -76,7 +83,7 @@ public final class GuiSwordParent extends GuiScreen {
 		
 		super.initGui();
         final IGuiSwordPage activePage = pages.getPageAt(activePageIndex);
-        activePage.onResize(width, height);
+        activePage.onResize(width, height, X_SIZE, Y_SIZE);
 		widthOffset = width / 2 - X_SIZE / 2;
         heightOffset = height / 2 - Y_SIZE / 2;
         int endIndex = Math.min(startPageIndex + MAX_TABS - 1, pages.size() - 1);
@@ -162,13 +169,10 @@ public final class GuiSwordParent extends GuiScreen {
 			}
 			startPageIndex = activePageIndex - activePageIndex % MAX_TABS;
 		}
+		
+		// delegate
 		pages.getPageAt(activePageIndex).actionPerformed(button);
 		
-		//DEBUG
-		/*
-		System.out.println("Start page index: " + startPageIndex);
-		System.out.println("Active page index: " + activePageIndex);
-		*/
 		buttonList.clear();
 		initGui();
 	}

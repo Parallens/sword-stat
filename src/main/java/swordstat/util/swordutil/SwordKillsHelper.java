@@ -172,8 +172,13 @@ public final class SwordKillsHelper {
 	}
 	
 	public Set<String> getEntityStringsFromMod( String modString ) {
-		
-		return modToEntityMapping.get(modString);
+
+		if ( modString == null ){
+			return new HashSet<String>();
+		}
+		else {
+			return modToEntityMapping.get(modString);
+		}
 	}
 	
 	public int getEntityKillsFromString( String entityClassString ) {

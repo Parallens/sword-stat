@@ -10,6 +10,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import swordstat.SwordStat;
+import swordstat.event.SwordStatGuiCalledEvent;
 import swordstat.gui.page.ArrayListSwordPages;
 import swordstat.gui.page.ISwordPages;
 import swordstat.init.EntitySorter.EntitySorting;
@@ -60,8 +61,14 @@ public class GuiHandler implements IGuiHandler {
 		SwordKillsHelper swordKillsHelper = new SwordKillsHelper(
 				tagCompoundInUse.getCompoundTag(SwordStat.MODID), entitySorting
 		);
-		//MinecraftForge.EVENT_BUS.post(event);
-		ISwordPages swordPages = new ArrayListSwordPages();
+
+		ISwordPages swordPages = new ArrayListSwordPages();		
+		// Post event
+		SwordStatGuiCalledEvent event = new SwordStatGuiCalledEvent(
+				swordPages, sword, world, tagCompoundInUse, entitySorting, player
+				);
+		MinecraftForge.EVENT_BUS.post(event);
+		
 		if ( ID == GuiEnum.SWORD_MENU.ordinal() ){
 			return new GuiSwordParent(swordPages, world, swordDataHelper, swordKillsHelper);
 		}

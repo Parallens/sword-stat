@@ -17,18 +17,18 @@ public abstract class AbstractGuiSwordPage implements IGuiSwordPage {
 	/** Height of the screen in pixels.*/
 	private int screenHeight;
 	
-	public AbstractGuiSwordPage( int parentWidth, int parentHeight ) {
+	public AbstractGuiSwordPage() {
 
-		this.parentWidth = parentWidth;
-		this.parentHeight = parentHeight;
 	}
 
 	@Override
-	public void onResize( int screenWidth, int screenHeight ) {
+	public void onResize( int screenWidth, int screenHeight, int parentWidth, int parentHeight ) {
 
 		buttons.clear();
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
+		this.parentWidth = parentWidth;
+		this.parentHeight = parentHeight;
 	}
 
 	@Override

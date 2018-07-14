@@ -26,10 +26,10 @@ public class PageEntity extends AbstractGuiSwordPage {
 	// static for convenience
 	private static SwordKillsHelper.EntityType activeEntityType = SwordKillsHelper.EntityType.MONSTER;
 	
-	public PageEntity( final Set<String> entityStrings, CreativeTabs inferedCreativeTab,
-			final SwordKillsHelper swordKillsHelper, int parentWidth, int parentHeight ) {
+	public PageEntity( final Set<String> entityStrings, final CreativeTabs inferedCreativeTab,
+			final SwordKillsHelper swordKillsHelper ) {
 		
-		super(parentWidth, parentHeight);
+		super();
 		this.entityStrings = entityStrings;
 		this.swordKillsHelper = swordKillsHelper;
 		this.inferedCreativeTab = inferedCreativeTab;
@@ -50,9 +50,9 @@ public class PageEntity extends AbstractGuiSwordPage {
 	}
 	
 	@Override
-	public void onResize( int screenWidth, int screenHeight ) {
+	public void onResize( int screenWidth, int screenHeight, int parentWidth, int parentHeight ) {
 		
-		super.onResize(screenWidth, screenHeight);
+		super.onResize(screenWidth, screenHeight, parentWidth, parentHeight);
 		Set<String> chosenEntityStringSet = entityStrings;
 		if ( activeEntityType.equals(SwordKillsHelper.EntityType.MONSTER) ){
 			chosenEntityStringSet = monsterStrings;
@@ -159,7 +159,7 @@ public class PageEntity extends AbstractGuiSwordPage {
 	public void setCurrentEntityType( SwordKillsHelper.EntityType entityType ) {
 		
 		this.activeEntityType = entityType;
-		onResize(getScreenWidth(), getScreenHeight());
+		onResize(getScreenWidth(), getScreenHeight(), getParentWidth(), getParentHeight());
 	}
 
 	@Override

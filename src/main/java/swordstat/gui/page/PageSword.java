@@ -26,9 +26,9 @@ public class PageSword extends AbstractGuiSwordPage {
 	private final String[] infoStringsNextToImage = new String[4];
 	private final String[] infoStringsBelowImage = new String[4];
 	
-	public PageSword( final int parentWidth, final int parentHeight, final SwordDataHelper swordDataHelper) {
+	public PageSword( final SwordDataHelper swordDataHelper) {
 
-		super(parentWidth, parentHeight);
+		super();
 		this.swordDataHelper = swordDataHelper;
 		
 		// Initialise strings next to the rendered sword.
@@ -76,9 +76,9 @@ public class PageSword extends AbstractGuiSwordPage {
 	}
 
 	@Override
-	public void onResize( int screenWidth, int screenHeight ) {
+	public void onResize( int screenWidth, int screenHeight, int parentWidth, int parentHeight ) {
 
-		super.onResize(screenWidth, screenHeight);
+		super.onResize(screenWidth, screenHeight, parentWidth, parentHeight);
 	}
 
 	@Override
