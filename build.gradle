@@ -10,6 +10,13 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
+repositories {
+    maven {
+        name 'DVS1 Maven FS'
+        url 'http://dvs1.progwml6.com/files/maven'
+    }
+}
+
 version = '1.12.2-0.2.1'
 group = "lw.paras_sword_stat" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "paras_sword_stat"
@@ -36,6 +43,8 @@ dependencies {
 
     testCompile "junit:junit:4.12"        
     testCompile "org.mockito:mockito-core:2.+"
+      
+    deobfProvided "slimeknights:TConstruct:1.12.2-2.10.1.87"
 }
 
 processResources {

@@ -8,7 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.world.World;
-import swordstat.Main;
+import swordstat.SwordStat;
 import swordstat.init.EntitySorter.EntitySorting;
 import swordstat.init.EntitySorter.IEntityGroupSorter;
 import swordstat.util.ServerResourceLocator;
@@ -57,7 +57,7 @@ public final class EntitySortingInit {
 				entity = entityClass.getConstructor(World.class)
 						.newInstance(world);
 			} catch ( Exception e ){
-				Main.LOGGER.error("Could not initialise entity of " + entityClass + ", skipping...");
+				SwordStat.LOGGER.error("Could not initialise entity of " + entityClass + ", skipping...");
 				return false;
 			}
 			if ( entity != null && !entity.isNonBoss() ){

@@ -4,7 +4,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import swordstat.Main;
+import swordstat.SwordStat;
 import swordstat.gui.GuiHandler;
 import swordstat.init.SwordStatEventHandlers;
 import swordstat.init.SwordStatKeyBindings;
@@ -25,7 +25,7 @@ public class ClientProxy extends CommonProxy {
 		super.fmlLifeCycleEvent(event);
 		SwordStatKeyBindings.init();
 		SwordStatEventHandlers.registerClient();
-		NetworkRegistry.INSTANCE.registerGuiHandler(Main.instance, GUI_HANDLER);
+		NetworkRegistry.INSTANCE.registerGuiHandler(SwordStat.instance, GUI_HANDLER);
 	}
 	
 	@Override

@@ -11,7 +11,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import swordstat.Main;
+import swordstat.SwordStat;
 import swordstat.init.EntitySorter.EntitySorting;
 import swordstat.util.ServerResourceLocator;
 
@@ -43,7 +43,7 @@ public final class SwordNBTHelper {
 					"Itemstack is not a sword!"
 			);
 		}
-		if ( sword.hasTagCompound() && sword.getTagCompound().hasKey(Main.MODID) ){
+		if ( sword.hasTagCompound() && sword.getTagCompound().hasKey(SwordStat.MODID) ){
 			throw new IllegalArgumentException(
 					"Sword already has an appropriate NBT sub-compound attached!"
 			);
@@ -123,7 +123,7 @@ public final class SwordNBTHelper {
 		
 		NBTTagCompound baseCompound = 
 				(sword.hasTagCompound())? sword.getTagCompound().copy(): new NBTTagCompound();
-		baseCompound.setTag(Main.MODID, compound);
+		baseCompound.setTag(SwordStat.MODID, compound);
 		sword.setTagCompound(baseCompound);
 	}
 	
@@ -150,7 +150,7 @@ public final class SwordNBTHelper {
 			);			
 		}
 		// Get NBT and edit it.
-		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(Main.MODID).copy();
+		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(SwordStat.MODID).copy();
 		int[] kills = tag.getIntArray(data.toString());
 		// DEBUG
 		//System.out.println(kills);
@@ -170,7 +170,7 @@ public final class SwordNBTHelper {
 			}
 		}
 		tag.setIntArray(data.toString(), kills);
-		sword.getTagCompound().setTag(Main.MODID, tag);
+		sword.getTagCompound().setTag(SwordStat.MODID, tag);
 	}
 	
 	public void incNBTData( ItemStack sword, SwordDataEnum data ) 
@@ -189,11 +189,11 @@ public final class SwordNBTHelper {
 			}
 		}
 		// Get NBT and edit it.
-		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(Main.MODID).copy();
+		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(SwordStat.MODID).copy();
 		int kills = tag.getInteger(data.toString());
 		kills++;
 		tag.setInteger(data.toString(), kills);
-		sword.getTagCompound().setTag(Main.MODID, tag);
+		sword.getTagCompound().setTag(SwordStat.MODID, tag);
 	}
 	
 	public void updateNBTData( ItemStack sword, World world )
@@ -205,7 +205,7 @@ public final class SwordNBTHelper {
 			throw new IllegalArgumentException("Invalid itemstack!");
 		}
 		
-		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(Main.MODID).copy();
+		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(SwordStat.MODID).copy();
 		
 		NBTTagList bossTagList = tag.getTagList(
 				SwordDataEnum.BOSS_NAMES.toString(), Constants.NBT.TAG_COMPOUND
@@ -248,7 +248,7 @@ public final class SwordNBTHelper {
 				updatedArray(passiveMapping, passiveTagList, passiveKills)
 		);
 		
-		sword.getTagCompound().setTag(Main.MODID, tag);
+		sword.getTagCompound().setTag(SwordStat.MODID, tag);
 	}
 	
 	private boolean itemStackValidCheck( ItemStack itemStack ) {
@@ -259,7 +259,7 @@ public final class SwordNBTHelper {
 		// Mindf@ck
 		if ( 
 				! (itemStack.hasTagCompound() &&
-				itemStack.getTagCompound().hasKey(Main.MODID)) 
+				itemStack.getTagCompound().hasKey(SwordStat.MODID)) 
 		){
 			return false;
 		}

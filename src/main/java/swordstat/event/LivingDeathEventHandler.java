@@ -10,7 +10,7 @@ import net.minecraft.item.ItemSword;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import swordstat.Main;
+import swordstat.SwordStat;
 import swordstat.init.EntitySorter.EntitySorting;
 import swordstat.util.ServerResourceLocator;
 import swordstat.util.swordutil.SwordDataEnum;
@@ -33,7 +33,7 @@ public class LivingDeathEventHandler {
 
 		EntityPlayer player = (EntityPlayer) event.getSource().getTrueSource();
 		ItemStack sword = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
-		EntitySorting entitySorting = Main.SERVER_RESOURCE_LOCATOR.getEntitySorting();
+		EntitySorting entitySorting = SwordStat.SERVER_RESOURCE_LOCATOR.getEntitySorting();
 		Map<String, Class<? extends Entity>> bossMapping =
 				entitySorting.getSorting(ServerResourceLocator.BOSS_STRING);
 		Map<String, Class<? extends Entity>> monsterMapping =
@@ -42,7 +42,7 @@ public class LivingDeathEventHandler {
 				entitySorting.getSorting(ServerResourceLocator.PASSIVE_STRING);
 		// Check if it has NBT here & give it NBT
 
-		SwordNBTHelper swordNBTHelper = Main.SERVER_RESOURCE_LOCATOR.getSwordNBTHelper();
+		SwordNBTHelper swordNBTHelper = SwordStat.SERVER_RESOURCE_LOCATOR.getSwordNBTHelper();
 		try {
 			swordNBTHelper.attachNBT(sword, false, player.world);
 		}

@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
-import swordstat.Main;
+import swordstat.SwordStat;
 import swordstat.gui.GuiEnum;
 import swordstat.proxy.ClientProxy;
 
@@ -45,7 +45,7 @@ public class OpenSwordStatGuiOnClientMessage implements IMessage {
 		public IMessage onMessage( final OpenSwordStatGuiOnClientMessage message, MessageContext ctx ) {
 
 			if ( ctx.side != Side.CLIENT ) {
-		        Main.LOGGER.error("OpenSwordStatGuiOnClientMessage received on wrong side:" + ctx.side);
+		        SwordStat.LOGGER.error("OpenSwordStatGuiOnClientMessage received on wrong side:" + ctx.side);
 		        return null;
 			}
 			
@@ -57,7 +57,7 @@ public class OpenSwordStatGuiOnClientMessage implements IMessage {
 		    		
 		    		ClientProxy.GUI_HANDLER.setTagCompoundToUse(message.tagCompound);
 		    		player.openGui(
-							Main.instance, GuiEnum.SWORD_MENU.ordinal(), player.world, 0, 0, 0
+							SwordStat.instance, GuiEnum.SWORD_MENU.ordinal(), player.world, 0, 0, 0
 		    		);
 		    	}
 		    });

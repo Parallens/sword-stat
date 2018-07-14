@@ -2,7 +2,7 @@ package swordstat.util.swordutil;
 
 import java.util.HashMap;
 
-import swordstat.Main;
+import swordstat.SwordStat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

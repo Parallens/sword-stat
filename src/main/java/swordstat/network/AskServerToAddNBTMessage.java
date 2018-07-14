@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
-import swordstat.Main;
+import swordstat.SwordStat;
 import swordstat.util.ServerResourceLocator;
 import swordstat.util.swordutil.SwordNBTHelper;
 
@@ -49,7 +49,7 @@ public class AskServerToAddNBTMessage implements IMessage {
 		public IMessage onMessage( final AskServerToAddNBTMessage message, MessageContext ctx ) {
 
 			if ( ctx.side != Side.SERVER ) {
-		        Main.LOGGER.error("SendEntitySortMessage received on wrong side:" + ctx.side);
+		        SwordStat.LOGGER.error("SendEntitySortMessage received on wrong side:" + ctx.side);
 		        return null;
 			}
 			
@@ -58,7 +58,7 @@ public class AskServerToAddNBTMessage implements IMessage {
 		    	
 		    	public void run() {
 		    		
-		    		SwordNBTHelper swordNBTHelper = Main.SERVER_RESOURCE_LOCATOR.getSwordNBTHelper();
+		    		SwordNBTHelper swordNBTHelper = SwordStat.SERVER_RESOURCE_LOCATOR.getSwordNBTHelper();
 		    		ItemStack itemStack = serverPlayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
 		    		if ( itemStack != null && itemStack.getItem() instanceof ItemSword ) {
 		    			try {
@@ -70,7 +70,7 @@ public class AskServerToAddNBTMessage implements IMessage {
 		    		}
 		    		// We don't send it in the return below, we send it here to ensure processing above is done
 		    		if ( message.openGUIAfterProcessing ){
-		    			Main.INSTANCE.sendTo(
+		    			SwordStat.INSTANCE.sendTo(
 		    					new OpenSwordStatGuiOnClientMessage(itemStack.getTagCompound()),
 		    					serverPlayer
 		    			);

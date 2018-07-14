@@ -16,7 +16,7 @@ import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.GuiScrollingList;
-import swordstat.Main;
+import swordstat.SwordStat;
 import swordstat.util.RenderUtil;
 import swordstat.util.StringUtil;
 import swordstat.util.swordutil.SwordKillsHelper;
@@ -137,7 +137,7 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 						newInstance(Minecraft.getMinecraft().player.world));
 			} catch (Exception e) {
 				// Should never happen, each entity is instantiated like this in the entityHandler
-				Main.LOGGER.error("Could not initialise entity before rendering it, this should not happen!");
+				SwordStat.LOGGER.error("Could not initialise entity before rendering it, this should not happen!");
 				return;
 			}
 	    }

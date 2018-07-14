@@ -18,12 +18,12 @@ import swordstat.util.ServerResourceLocator;
 import swordstat.util.SwordStatResourceLocator;
 
 
-@Mod(modid = Main.MODID, name = Main.MODNAME, version = Main.VERSION, acceptedMinecraftVersions = "[1.12.2]")
-public class Main {
+@Mod(modid = SwordStat.MODID, name = SwordStat.MODNAME, version = SwordStat.VERSION, acceptedMinecraftVersions = "[1.12.2]")
+public class SwordStat {
 	
 	public static final String MODID = "paras_sword_stat";
 	public static final String MODNAME = "Para's Sword Stat";
-	public static final String VERSION = "0.2.1";
+	public static final String VERSION = "0.3.0";
 	
 	public static final Logger LOGGER = LogManager.getLogger(MODNAME);
 	public static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
@@ -34,11 +34,11 @@ public class Main {
 			new SwordStatResourceLocator();
 	
 	@Instance(MODID)
-	public static Main instance = new Main();
+	public static SwordStat instance = new SwordStat();
 	
 	@SidedProxy(
 			clientSide = "swordstat.proxy.ClientProxy",
-			serverSide = "swordstat.proxy.CommonProxy"
+			serverSide = "swordstat.proxy.ServerProxy"
 	)
 	public static CommonProxy proxy;
     	
