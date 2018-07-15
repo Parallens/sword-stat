@@ -12,6 +12,7 @@ import swordstat.SwordStat;
 import swordstat.gui.GuiEnum;
 import swordstat.init.SwordStatKeyBindings;
 import swordstat.network.AskServerToAddNBTMessage;
+import swordstat.proxy.ClientProxy;
 
 
 public class KeyInputEventHandler {
@@ -23,18 +24,11 @@ public class KeyInputEventHandler {
 			EntityPlayer player = Minecraft.getMinecraft().player;
 			// Check if the player is holding a sword in the mainhand.
 			ItemStack itemStack = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND); 
-			if ( itemStack == null || ! (itemStack.getItem() instanceof ItemSword) ) return;
-			
-			// Ask the server to add NBT to the sword (server will decide if this is necessary, e.g. could already be added)
-			SwordStat.INSTANCE.sendToServer(new AskServerToAddNBTMessage(true));
-			
-			/*
-			// We want no container so we call it on the client side only.
-			player.openGui(
-					Main.instance, GuiEnum.SWORD_MENU.ordinal(), player.world, 0, 0, 0
-			);
-			*/
-
+			if ( ClientProxy.OPEN_GUI_CONTROLLER.tryItem(itemStack) ){
+				// Ask the server to add NBT to the sword (server will decide if this is necessary,
+				// e.g. could already be added), true indicates open GUI in event of success
+				SwordStat.INSTANCE.sendToServer(new AskServerToAddNBTMessage(true));
+			}
 		}
 	}
 }

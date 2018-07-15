@@ -1,4 +1,4 @@
-package swordstat.util;
+package swordstat.condition;
 
 import net.minecraft.item.ItemStack;
 
@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
  * 
  *
  */
-public interface IShouldOpenGUI {
+public interface ICouldOpenGUICondition {
 
 	/**
 	 * Return true if a sword stat GUI should be opened for the given item.

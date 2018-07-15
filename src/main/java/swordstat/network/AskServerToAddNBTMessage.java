@@ -60,14 +60,11 @@ public class AskServerToAddNBTMessage implements IMessage {
 		    		
 		    		SwordNBTHelper swordNBTHelper = SwordStat.SERVER_RESOURCE_LOCATOR.getSwordNBTHelper();
 		    		ItemStack itemStack = serverPlayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
-		    		if ( itemStack != null && itemStack.getItem() instanceof ItemSword ) {
-		    			try {
-		    				swordNBTHelper.attachNBT(itemStack, false, serverPlayer.getServerWorld());
-		    			}
-		    			catch ( IllegalArgumentException e ){
-		    			}
-		    			swordNBTHelper.updateNBTData(itemStack, serverPlayer.getServerWorld());
+		    		try {
+		    			swordNBTHelper.attachNBT(itemStack, false, serverPlayer.getServerWorld());
 		    		}
+		    		catch ( IllegalArgumentException e ){}
+		    		swordNBTHelper.updateNBTData(itemStack, serverPlayer.getServerWorld());
 		    		// We don't send it in the return below, we send it here to ensure processing above is done
 		    		if ( message.openGUIAfterProcessing ){
 		    			SwordStat.INSTANCE.sendTo(

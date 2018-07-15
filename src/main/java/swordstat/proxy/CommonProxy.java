@@ -1,11 +1,15 @@
 package swordstat.proxy;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import swordstat.SwordStat;
+import swordstat.condition.ICouldOpenGUICondition;
 import swordstat.init.SwordStatEventHandlers;
 import swordstat.network.AskServerToAddNBTMessage;
 import swordstat.network.AskServerToAddNBTMessage.AskServerToAddNBTMessageHandler;
@@ -16,7 +20,7 @@ import swordstat.network.TellClientToSortEntitiesMessageHandler;
 
 public class CommonProxy {
 	
-	public static SimpleNetworkWrapper network;
+	//public final static SimpleNetworkWrapper network;
 	
 	public void fmlLifeCycleEvent( FMLPreInitializationEvent event ) {
 		

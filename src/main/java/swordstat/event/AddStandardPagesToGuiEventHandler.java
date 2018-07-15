@@ -39,6 +39,7 @@ public class AddStandardPagesToGuiEventHandler {
 			@Override
 			public ItemStack getIconItemStack() {
 			
+				//TODO add static cache for these
 				return new ItemStack(Items.ENDER_PEARL);
 			}
 			

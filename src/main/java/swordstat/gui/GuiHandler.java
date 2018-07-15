@@ -46,30 +46,29 @@ public class GuiHandler implements IGuiHandler {
 			int ID, EntityPlayer player, World world,
 			int x, int y, int z ) {
 		
-		// all client side, world == Minecraft.getMinecraft().world
-		EntitySorting entitySorting = SwordStat.CLIENT_RESOURCE_LOCATOR.getEntitySorting();
-		
-		ItemStack sword = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
-		if ( tagCompoundInUse == null || !tagCompoundInUse.hasKey(SwordStat.MODID) ){
-			SwordStat.LOGGER.error("NBT used to store info by this mod could not be found on the sword, this should not happen!");
-			return null;
-		}
-		
-		SwordDataHelper swordDataHelper = new SwordDataHelper(
-				sword, tagCompoundInUse.getCompoundTag(SwordStat.MODID), player
-		);
-		SwordKillsHelper swordKillsHelper = new SwordKillsHelper(
-				tagCompoundInUse.getCompoundTag(SwordStat.MODID), entitySorting
-		);
-
-		ISwordPages swordPages = new ArrayListSwordPages();		
-		// Post event
-		SwordStatGuiCalledEvent event = new SwordStatGuiCalledEvent(
-				swordPages, sword, world, tagCompoundInUse, entitySorting, player
-				);
-		MinecraftForge.EVENT_BUS.post(event);
-		
 		if ( ID == GuiEnum.SWORD_MENU.ordinal() ){
+			// all client side, world == Minecraft.getMinecraft().world
+			EntitySorting entitySorting = SwordStat.CLIENT_RESOURCE_LOCATOR.getEntitySorting();
+			
+			ItemStack sword = player.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+			if ( tagCompoundInUse == null || !tagCompoundInUse.hasKey(SwordStat.MODID) ){
+				SwordStat.LOGGER.error("NBT used to store info by this mod could not be found on the sword, this should not happen!");
+				return null;
+			}
+			
+			SwordDataHelper swordDataHelper = new SwordDataHelper(
+					sword, tagCompoundInUse.getCompoundTag(SwordStat.MODID), player
+			);
+			SwordKillsHelper swordKillsHelper = new SwordKillsHelper(
+					tagCompoundInUse.getCompoundTag(SwordStat.MODID), entitySorting
+			);
+
+			ISwordPages swordPages = new ArrayListSwordPages();		
+			// Post event
+			SwordStatGuiCalledEvent event = new SwordStatGuiCalledEvent(
+					swordPages, sword, world, tagCompoundInUse, entitySorting, player
+			);
+			MinecraftForge.EVENT_BUS.post(event);
 			return new GuiSwordParent(swordPages, world, swordDataHelper, swordKillsHelper);
 		}
 		return null;
