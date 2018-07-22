@@ -3,8 +3,8 @@ package swordstat.gui.page;
 import java.util.ArrayList;
 import java.util.List;
 
+import swordstat.swordinfo.SwordData;
 import swordstat.util.StringUtil;
-import swordstat.util.swordutil.SwordDataHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -19,14 +19,14 @@ public class PageSword extends AbstractGuiSwordPage {
 	
 	// x = 12, y = 37
 	// width = height = 70
-	private final SwordDataHelper swordDataHelper;
+	private final SwordData swordDataHelper;
 	
 	private final String[] titleStringsNextToImage = new String[4];
 	private final String[] titleStringsBelowImage = new String[4];
 	private final String[] infoStringsNextToImage = new String[4];
 	private final String[] infoStringsBelowImage = new String[4];
 	
-	public PageSword( final SwordDataHelper swordDataHelper) {
+	public PageSword( final SwordData swordDataHelper) {
 
 		super();
 		this.swordDataHelper = swordDataHelper;
@@ -37,27 +37,28 @@ public class PageSword extends AbstractGuiSwordPage {
 		titleStringsNextToImage[2] = "Repair Cost: ";
 		titleStringsNextToImage[3] = "Player Kills: ";
 		
-		infoStringsNextToImage[0] = swordDataHelper.getCurrentMaster();
+		infoStringsNextToImage[0] = swordDataHelper.getMasterName();
 		infoStringsNextToImage[1] = Integer.toString(swordDataHelper.getTotalKills());
 		infoStringsNextToImage[2] = Integer.toString(swordDataHelper.getRepairCost());
 		infoStringsNextToImage[3] = Integer.toString(swordDataHelper.getPlayerKills());
 		
 		// Initialise strings below the rendered sword.
-		String discoveredStringTitle, discoveredStringInfo;
-		if ( swordDataHelper.getIrlDateCrafted() == null ){
-			discoveredStringTitle = "Found irl: ";
-			discoveredStringInfo = StringUtil.getNeaterDate(swordDataHelper.getIrlDateFound());
-		} else {
+		String discoveredStringTitle;
+		if ( swordDataHelper.isSwordCrafted() ){
 			discoveredStringTitle = "Crafted irl: ";
-			discoveredStringInfo = StringUtil.getNeaterDate(swordDataHelper.getIrlDateCrafted());
+		} else {
+			discoveredStringTitle = "Found irl: ";
 		}
-		int inGameAge = (int) (Math.floor(swordDataHelper.getIngameAge()) / 24000);
+		String discoveredStringInfo = StringUtil.getNeaterDate(swordDataHelper.getIRLAge()); 
+		
+		int inGameAge = (int) (Math.floor(swordDataHelper.getInGameAge()) / 24000);
 		titleStringsBelowImage[0] = "Durability: ";
 		titleStringsBelowImage[1] = "Sword Type: ";
 		titleStringsBelowImage[2] = discoveredStringTitle;
 		titleStringsBelowImage[3] = "In Game Age: ";
 		
-		infoStringsBelowImage[0] = swordDataHelper.getDurability() + "/" + swordDataHelper.getMaxDurability();
+		infoStringsBelowImage[0] = swordDataHelper.getCurrentDurability() +
+				"/" + swordDataHelper.getMaxDurability();
 		infoStringsBelowImage[1] = swordDataHelper.getSwordType();
 		infoStringsBelowImage[2] = discoveredStringInfo;
 		infoStringsBelowImage[3] = inGameAge + (( inGameAge == 1 )? " day old" : " days old");

@@ -16,8 +16,8 @@ import swordstat.gui.SwordParentButtons.UnselectedTabButton;
 import swordstat.gui.page.AbstractGuiSwordPage;
 import swordstat.gui.page.IGuiSwordPage;
 import swordstat.gui.page.ISwordPages;
-import swordstat.util.swordutil.SwordDataHelper;
-import swordstat.util.swordutil.SwordKillsHelper;
+import swordstat.swordinfo.SwordData;
+import swordstat.swordinfo.SwordKillsHelper;
 
 @SideOnly(Side.CLIENT)
 public final class GuiSwordParent extends GuiScreen {
@@ -37,7 +37,7 @@ public final class GuiSwordParent extends GuiScreen {
 	/** How many tabs are currently being displayed. **/
 	private int tabsPresent;
 	
-	public GuiSwordParent( ISwordPages pages, World world, SwordDataHelper swordDataHelper,
+	public GuiSwordParent( ISwordPages pages, World world, SwordData swordDataHelper,
 			SwordKillsHelper swordKillsHelper ) {
 		
 		super();

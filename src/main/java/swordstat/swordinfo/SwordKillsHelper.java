@@ -1,4 +1,4 @@
-package swordstat.util.swordutil;
+package swordstat.swordinfo;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -168,7 +168,7 @@ public final class SwordKillsHelper {
 				return mod;
 			}
 		}
-		return null;
+		return "";
 	}
 	
 	public Set<String> getEntityStringsFromMod( String modString ) {

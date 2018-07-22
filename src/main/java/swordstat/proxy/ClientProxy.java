@@ -1,7 +1,5 @@
 package swordstat.proxy;
 
-import java.util.List;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;

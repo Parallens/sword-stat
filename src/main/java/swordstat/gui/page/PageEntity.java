@@ -12,7 +12,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import swordstat.gui.GuiEntityScrollingList;
-import swordstat.util.swordutil.SwordKillsHelper;
+import swordstat.swordinfo.SwordKillsHelper;
 
 public class PageEntity extends AbstractGuiSwordPage {
 	

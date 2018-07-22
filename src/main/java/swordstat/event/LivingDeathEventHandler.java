@@ -12,8 +12,8 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import swordstat.SwordStat;
 import swordstat.init.EntitySorter.EntitySorting;
+import swordstat.swordinfo.SwordDataEnum;
 import swordstat.util.ServerResourceLocator;
-import swordstat.util.swordutil.SwordDataEnum;
 import swordstat.util.swordutil.SwordNBTHelper;
 
 public class LivingDeathEventHandler {

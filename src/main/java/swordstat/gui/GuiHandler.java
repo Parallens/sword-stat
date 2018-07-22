@@ -14,8 +14,8 @@ import swordstat.event.SwordStatGuiCalledEvent;
 import swordstat.gui.page.ArrayListSwordPages;
 import swordstat.gui.page.ISwordPages;
 import swordstat.init.EntitySorter.EntitySorting;
-import swordstat.util.swordutil.SwordDataHelper;
-import swordstat.util.swordutil.SwordKillsHelper;
+import swordstat.swordinfo.SwordData;
+import swordstat.swordinfo.SwordKillsHelper;
 
 public class GuiHandler implements IGuiHandler {
 	
@@ -56,7 +56,7 @@ public class GuiHandler implements IGuiHandler {
 				return null;
 			}
 			
-			SwordDataHelper swordDataHelper = new SwordDataHelper(
+			SwordData swordDataHelper = new SwordData(
 					sword, tagCompoundInUse.getCompoundTag(SwordStat.MODID), player
 			);
 			SwordKillsHelper swordKillsHelper = new SwordKillsHelper(

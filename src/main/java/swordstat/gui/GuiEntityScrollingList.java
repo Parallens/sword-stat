@@ -17,9 +17,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.GuiScrollingList;
 import swordstat.SwordStat;
+import swordstat.swordinfo.SwordKillsHelper;
 import swordstat.util.RenderUtil;
 import swordstat.util.StringUtil;
-import swordstat.util.swordutil.SwordKillsHelper;
 
 public class GuiEntityScrollingList extends GuiScrollingList {
 	

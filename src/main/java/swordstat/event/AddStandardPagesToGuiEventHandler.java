@@ -11,8 +11,8 @@ import swordstat.SwordStat;
 import swordstat.gui.page.ISwordPages;
 import swordstat.gui.page.PageEntity;
 import swordstat.gui.page.PageSword;
-import swordstat.util.swordutil.SwordDataHelper;
-import swordstat.util.swordutil.SwordKillsHelper;
+import swordstat.swordinfo.SwordData;
+import swordstat.swordinfo.SwordKillsHelper;
 
 public class AddStandardPagesToGuiEventHandler {
 
@@ -20,7 +20,7 @@ public class AddStandardPagesToGuiEventHandler {
 	public void onEvent( final SwordStatGuiCalledEvent event ) {
 
 		
-		SwordDataHelper swordDataHelper = new SwordDataHelper(
+		SwordData swordDataHelper = new SwordData(
 				event.getItemStack(), event.getItemStackTagCompound().getCompoundTag(SwordStat.MODID),
 				event.getPlayer()
 		);

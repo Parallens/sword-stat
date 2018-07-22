@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import swordstat.SwordStat;
 import swordstat.init.EntitySorter.EntitySorting;
+import swordstat.swordinfo.SwordDataEnum;
 import swordstat.util.ServerResourceLocator;
 
 public final class SwordNBTHelper {

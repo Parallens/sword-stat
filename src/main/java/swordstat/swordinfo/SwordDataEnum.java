@@ -1,4 +1,4 @@
-package swordstat.util.swordutil;
+package swordstat.swordinfo;
 public enum SwordDataEnum {
 	
 	IRL_DATE_CRAFTED,
