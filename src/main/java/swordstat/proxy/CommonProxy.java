@@ -58,7 +58,7 @@ public class CommonProxy {
 	public void fmlLifeCycleEvent( FMLPostInitializationEvent event ) {
 
 		if ( Loader.isModLoaded("tconstruct") ){
-			TinkerIntegration.runClientIntegration();
+			TinkerIntegration.runServerIntegration();
 		}		
 	}
 }
