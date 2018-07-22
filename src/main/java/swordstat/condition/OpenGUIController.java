@@ -1,15 +1,19 @@
 package swordstat.condition;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.minecraft.item.ItemStack;
 
+/**
+ * Thread safe class used for checking if the sword stat GUI can be used
+ * for a given item stack. 
+ */
 public class OpenGUIController implements Collection<ICouldOpenGUICondition> {
 
-	List<ICouldOpenGUICondition> conditions = new ArrayList<>();
+	List<ICouldOpenGUICondition> conditions = new CopyOnWriteArrayList<>();
 	
 	/**
 	 * Iterate through all ICouldOpenGUICondition objects held in this object, and

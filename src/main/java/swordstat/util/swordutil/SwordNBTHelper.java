@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
@@ -39,11 +38,6 @@ public final class SwordNBTHelper {
 	public void attachNBT( ItemStack sword, boolean wasCrafted, World worldObj )
 		throws IllegalArgumentException {
 		
-		if ( ! (sword.getItem() instanceof ItemSword) ){
-			throw new IllegalArgumentException(
-					"Itemstack is not a sword!"
-			);
-		}
 		if ( sword.hasTagCompound() && sword.getTagCompound().hasKey(SwordStat.MODID) ){
 			throw new IllegalArgumentException(
 					"Sword already has an appropriate NBT sub-compound attached!"
@@ -254,9 +248,6 @@ public final class SwordNBTHelper {
 	
 	private boolean itemStackValidCheck( ItemStack itemStack ) {
 		
-		if ( ! (itemStack.getItem() instanceof ItemSword) ){
-			return false;
-		}
 		// Mindf@ck
 		if ( 
 				! (itemStack.hasTagCompound() &&

@@ -1,6 +1,7 @@
 package swordstat.event;
 
 import swordstat.SwordStat;
+import swordstat.proxy.CommonProxy;
 import swordstat.util.ServerResourceLocator;
 import swordstat.util.swordutil.SwordNBTHelper;
 import net.minecraft.item.ItemStack;
@@ -25,7 +26,7 @@ public class AttachNBTEventHandler {
 	public void attachNBT( ItemStack itemStack, World worldObj ) {
 
 		SwordNBTHelper swordNBTHelper = SwordStat.SERVER_RESOURCE_LOCATOR.getSwordNBTHelper();
-		if ( itemStack.getItem() instanceof ItemSword ){
+		if ( CommonProxy.OPEN_GUI_CONTROLLER.tryItem(itemStack) ){
 			swordNBTHelper.attachNBT(itemStack, true, worldObj);
 		}
 		else {
@@ -36,7 +37,8 @@ public class AttachNBTEventHandler {
 	@SubscribeEvent
 	public void onEvent( PlayerEvent.ItemCraftedEvent event ) {
 		
-		if ( event.crafting.getItem() instanceof ItemSword && !event.player.getEntityWorld().isRemote ){
+		if ( CommonProxy.OPEN_GUI_CONTROLLER.tryItem(event.crafting)
+				&& !event.player.getEntityWorld().isRemote ){
 			attachNBT(event.crafting, event.player.getEntityWorld());
 		}
 		

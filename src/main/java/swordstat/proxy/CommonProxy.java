@@ -1,16 +1,17 @@
 package swordstat.proxy;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import swordstat.SwordStat;
 import swordstat.condition.ICouldOpenGUICondition;
+import swordstat.condition.OpenGUIController;
 import swordstat.init.SwordStatEventHandlers;
+import swordstat.integration.TinkerIntegration;
 import swordstat.network.AskServerToAddNBTMessage;
 import swordstat.network.AskServerToAddNBTMessage.AskServerToAddNBTMessageHandler;
 import swordstat.network.OpenSwordStatGuiOnClientMessage;
@@ -21,9 +22,23 @@ import swordstat.network.TellClientToSortEntitiesMessageHandler;
 public class CommonProxy {
 	
 	//public final static SimpleNetworkWrapper network;
-	
+	public final static OpenGUIController OPEN_GUI_CONTROLLER = new OpenGUIController();
+
 	public void fmlLifeCycleEvent( FMLPreInitializationEvent event ) {
 		
+		OPEN_GUI_CONTROLLER.add(new ICouldOpenGUICondition() {
+
+			@Override
+			public boolean openForItemStack( ItemStack itemStack ) {
+
+				if ( itemStack != null && itemStack.getItem() instanceof ItemSword ) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+		});
 	}
 	
 	public void fmlLifeCycleEvent( FMLInitializationEvent event ) {
@@ -41,6 +56,9 @@ public class CommonProxy {
 	}
 	
 	public void fmlLifeCycleEvent( FMLPostInitializationEvent event ) {
-		
+
+		if ( Loader.isModLoaded("tconstruct") ){
+			TinkerIntegration.runClientIntegration();
+		}		
 	}
 }

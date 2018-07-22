@@ -41,7 +41,9 @@ public class SwordStat {
 	public static SwordStat instance = new SwordStat();
 	
 	@SidedProxy(
+			// Instantiated on physical client
 			clientSide = "swordstat.proxy.ClientProxy",
+			// Instantiated on dedicated server
 			serverSide = "swordstat.proxy.CommonProxy"
 	)
 	public static CommonProxy proxy;
