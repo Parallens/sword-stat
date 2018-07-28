@@ -21,6 +21,8 @@ public final class SwordNBTHelper {
 	private final Map<String, Class<? extends Entity>> monsterMapping;
 	private final Map<String, Class<? extends Entity>> passiveMapping;
 	
+	//private final Map<String, Class<? extends Entity>> entityStringToClassMapping;
+	
 	public SwordNBTHelper( final EntitySorting entitySorting ) {
 		
 		this.bossMapping = entitySorting.getSorting(ServerResourceLocator.BOSS_STRING);

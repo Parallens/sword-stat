@@ -1,5 +1,7 @@
 package swordstat.gui.page;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -7,43 +9,58 @@ import java.util.TreeSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import swordstat.gui.GuiEntityScrollingList;
+import swordstat.gui.GuiEntityScrollingList.EntityClassComparator;
+import swordstat.init.EntitySorter.EntitySorting;
 import swordstat.swordinfo.SwordKillsHelper;
+import swordstat.util.SwordStatResourceLocator;
 
 public class PageEntity extends AbstractGuiSwordPage {
 	
-	private final Set<String> entityStrings;
-	private final Set<String> bossStrings = new TreeSet<>();
-	private final Set<String> monsterStrings = new TreeSet<>();
-	private final Set<String> passiveStrings = new TreeSet<>();
+	private final String modTitle;
+	private final Collection<Class<? extends Entity>> entityClasses;
+	private final EntitySorting entitySorting;
+	private final Set<Class<? extends Entity>> bossEntityClasses, monsterEntityClasses, passiveEntityClasses;
 	private final SwordKillsHelper swordKillsHelper;
-	private final CreativeTabs inferedCreativeTab;
+	//private final CreativeTabs inferedCreativeTab;
 	private GuiEntityScrollingList entityScrollingList;
 	// static for convenience
-	private static SwordKillsHelper.EntityType activeEntityType = SwordKillsHelper.EntityType.MONSTER;
+	private static EntityType activeEntityType = EntityType.MONSTER;
+	/**
+	 * Enumeration of entity types used by this page.
+	 */
+	public enum EntityType {
+		
+		BOSS, MONSTER, PASSIVE
+	}
 	
-	public PageEntity( final Set<String> entityStrings, final CreativeTabs inferedCreativeTab,
-			final SwordKillsHelper swordKillsHelper ) {
+	public PageEntity( final String modTitle, final Collection<Class<? extends Entity>> entityClasses,
+			final EntitySorting entitySorting, final SwordKillsHelper swordKillsHelper ) {
 		
 		super();
-		this.entityStrings = entityStrings;
+		this.modTitle = modTitle;
+		this.entityClasses = entityClasses;
+		this.entitySorting = entitySorting;
 		this.swordKillsHelper = swordKillsHelper;
-		this.inferedCreativeTab = inferedCreativeTab;
 		
 		// Sort the entity strings into monsters, bosses and passives/misc
-		for ( String entityString : entityStrings ){
-			if ( SwordKillsHelper.EntityType.BOSS.equals(swordKillsHelper.getEntityType(entityString)) ){
-				bossStrings.add(entityString);
+		EntityClassComparator entityClassComparator = new EntityClassComparator(swordKillsHelper);
+		bossEntityClasses = new TreeSet<>(entityClassComparator);
+		monsterEntityClasses= new TreeSet<>(entityClassComparator);
+		passiveEntityClasses= new TreeSet<>(entityClassComparator);
+
+		for ( Class<? extends Entity> entityClass : entityClasses ){
+			if ( entitySorting.getSorting(SwordStatResourceLocator.BOSS_STRING).containsValue(entityClass) ){
+				bossEntityClasses.add(entityClass);
 			}
-			else if ( SwordKillsHelper.EntityType.MONSTER.equals(swordKillsHelper.getEntityType(entityString)) ){
-				monsterStrings.add(entityString);
+			else if ( entitySorting.getSorting(SwordStatResourceLocator.PASSIVE_STRING).containsValue(entityClass) ){
+				passiveEntityClasses.add(entityClass);
 			}
-			else if ( SwordKillsHelper.EntityType.PASSIVE.equals(swordKillsHelper.getEntityType(entityString)) ){
-				passiveStrings.add(entityString);
+			else if ( entitySorting.getSorting(SwordStatResourceLocator.MONSTER_STRING).containsValue(entityClass) ){
+				monsterEntityClasses.add(entityClass);
 			}
 		}
 		
@@ -53,19 +70,19 @@ public class PageEntity extends AbstractGuiSwordPage {
 	public void onResize( int screenWidth, int screenHeight, int parentWidth, int parentHeight ) {
 		
 		super.onResize(screenWidth, screenHeight, parentWidth, parentHeight);
-		Set<String> chosenEntityStringSet = entityStrings;
-		if ( activeEntityType.equals(SwordKillsHelper.EntityType.MONSTER) ){
-			chosenEntityStringSet = monsterStrings;
+		Set<Class<? extends Entity>> chosenEntityClassSet = new HashSet<>();
+		if ( activeEntityType.equals(EntityType.MONSTER) ){
+			chosenEntityClassSet = monsterEntityClasses;
 		}
-		else if ( activeEntityType.equals(SwordKillsHelper.EntityType.BOSS) ){
-			chosenEntityStringSet = bossStrings;
+		else if ( activeEntityType.equals(EntityType.BOSS) ){
+			chosenEntityClassSet = bossEntityClasses;
 		}
-		else if ( activeEntityType.equals(SwordKillsHelper.EntityType.PASSIVE) ){
-			chosenEntityStringSet = passiveStrings;
+		else if ( activeEntityType.equals(EntityType.PASSIVE) ){
+			chosenEntityClassSet = passiveEntityClasses;
 		}
 		entityScrollingList = new GuiEntityScrollingList(
 				getParentWidth(), getParentHeight(), screenWidth, screenHeight,
-				swordKillsHelper, chosenEntityStringSet
+				swordKillsHelper, chosenEntityClassSet
 		);
 	}
 	
@@ -75,7 +92,7 @@ public class PageEntity extends AbstractGuiSwordPage {
 		if ( entityScrollingList == null ){
 			entityScrollingList = new GuiEntityScrollingList(
 					getParentWidth(), getParentHeight(), getScreenWidth(), getScreenHeight(),
-					swordKillsHelper, entityStrings
+					swordKillsHelper, entityClasses
 			);
 		}
 		entityScrollingList.drawScreen(mouseX, mouseY, partialTicks);
@@ -90,23 +107,13 @@ public class PageEntity extends AbstractGuiSwordPage {
 	
 	public String getTitleString() {
 		
-		try{
-			return I18n.format(inferedCreativeTab.getTranslatedTabLabel(), new Object[0]);
-		}
-		catch ( NullPointerException e ){
-			return "";
-		}
+		return modTitle;
 	}
 
 	@Override
 	public ItemStack getIconItemStack() {
 
-		try {
-			return inferedCreativeTab.getIconItemStack();
-		}
-		catch ( NullPointerException e ){
-			return new ItemStack(Items.APPLE);
-		}
+		return new ItemStack(Items.APPLE);
 	}
 	
 	@Override
@@ -156,7 +163,7 @@ public class PageEntity extends AbstractGuiSwordPage {
 		GuiEntityScrollingList.setUseFiltered(!showAll);
 	}
 	
-	public void setCurrentEntityType( SwordKillsHelper.EntityType entityType ) {
+	public void setCurrentEntityType( EntityType entityType ) {
 		
 		this.activeEntityType = entityType;
 		onResize(getScreenWidth(), getScreenHeight(), getParentWidth(), getParentHeight());
@@ -180,15 +187,15 @@ public class PageEntity extends AbstractGuiSwordPage {
 		int index = getButtons().indexOf(button);
 		if ( index == 0 ){
 			// It's the monster button
-			setCurrentEntityType(SwordKillsHelper.EntityType.MONSTER);
+			setCurrentEntityType(EntityType.MONSTER);
 		}
 		else if ( index == 1 ){
 			// It's the boss button
-			setCurrentEntityType(SwordKillsHelper.EntityType.BOSS);
+			setCurrentEntityType(EntityType.BOSS);
 		}
 		else if ( index == 2 ){
 			// It's the passive button 
-			setCurrentEntityType(SwordKillsHelper.EntityType.PASSIVE);
+			setCurrentEntityType(EntityType.PASSIVE);
 		}
 		else if ( index == 3 ){
 			// The show all / only kills button has been toggled

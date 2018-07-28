@@ -19,17 +19,17 @@ public class PageSword extends AbstractGuiSwordPage {
 	
 	// x = 12, y = 37
 	// width = height = 70
-	private final SwordData swordDataHelper;
+	private final SwordData swordData;
 	
 	private final String[] titleStringsNextToImage = new String[4];
 	private final String[] titleStringsBelowImage = new String[4];
 	private final String[] infoStringsNextToImage = new String[4];
 	private final String[] infoStringsBelowImage = new String[4];
 	
-	public PageSword( final SwordData swordDataHelper) {
+	public PageSword( final SwordData swordData ) {
 
 		super();
-		this.swordDataHelper = swordDataHelper;
+		this.swordData = swordData;
 		
 		// Initialise strings next to the rendered sword.
 		titleStringsNextToImage[0] = "Master: ";
@@ -37,29 +37,29 @@ public class PageSword extends AbstractGuiSwordPage {
 		titleStringsNextToImage[2] = "Repair Cost: ";
 		titleStringsNextToImage[3] = "Player Kills: ";
 		
-		infoStringsNextToImage[0] = swordDataHelper.getMasterName();
-		infoStringsNextToImage[1] = Integer.toString(swordDataHelper.getTotalKills());
-		infoStringsNextToImage[2] = Integer.toString(swordDataHelper.getRepairCost());
-		infoStringsNextToImage[3] = Integer.toString(swordDataHelper.getPlayerKills());
+		infoStringsNextToImage[0] = swordData.getMasterName();
+		infoStringsNextToImage[1] = Integer.toString(swordData.getTotalKills());
+		infoStringsNextToImage[2] = Integer.toString(swordData.getRepairCost());
+		infoStringsNextToImage[3] = Integer.toString(swordData.getPlayerKills());
 		
 		// Initialise strings below the rendered sword.
 		String discoveredStringTitle;
-		if ( swordDataHelper.isSwordCrafted() ){
+		if ( swordData.isSwordCrafted() ){
 			discoveredStringTitle = "Crafted irl: ";
 		} else {
 			discoveredStringTitle = "Found irl: ";
 		}
-		String discoveredStringInfo = StringUtil.getNeaterDate(swordDataHelper.getIRLAge()); 
+		String discoveredStringInfo = StringUtil.getNeaterDate(swordData.getIRLAge()); 
 		
-		int inGameAge = (int) (Math.floor(swordDataHelper.getInGameAge()) / 24000);
+		int inGameAge = (int) (Math.floor(swordData.getInGameAge()) / 24000);
 		titleStringsBelowImage[0] = "Durability: ";
 		titleStringsBelowImage[1] = "Sword Type: ";
 		titleStringsBelowImage[2] = discoveredStringTitle;
 		titleStringsBelowImage[3] = "In Game Age: ";
 		
-		infoStringsBelowImage[0] = swordDataHelper.getCurrentDurability() +
-				"/" + swordDataHelper.getMaxDurability();
-		infoStringsBelowImage[1] = swordDataHelper.getSwordType();
+		infoStringsBelowImage[0] = swordData.getCurrentDurability() +
+				"/" + swordData.getMaxDurability();
+		infoStringsBelowImage[1] = swordData.getSwordType();
 		infoStringsBelowImage[2] = discoveredStringInfo;
 		infoStringsBelowImage[3] = inGameAge + (( inGameAge == 1 )? " day old" : " days old");
 	}
@@ -93,7 +93,7 @@ public class PageSword extends AbstractGuiSwordPage {
 		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
 		// TODO dynamic resizing
 		// Draw the title
- 		String trimmedTitle = fontRenderer.trimStringToWidth(swordDataHelper.getName(), (int) (getParentWidth()/2 - 5));
+ 		String trimmedTitle = fontRenderer.trimStringToWidth(swordData.getName(), (int) (getParentWidth()/2 - 5));
 		int stringLength = fontRenderer.getStringWidth(trimmedTitle);
         fontRenderer.drawStringWithShadow(
         		trimmedTitle, (widthOffset + (getParentWidth() - stringLength * 2)/2)/2,
@@ -106,7 +106,7 @@ public class PageSword extends AbstractGuiSwordPage {
 		parent.drawTexturedModalRect(
 				(widthOffset + 15) / 3 - 1, (heightOffset + 43) / 3 - 1,
 				getParentWidth() + 1, 0, 18, 18);
-		parent.mc.getRenderItem().renderItemAndEffectIntoGUI(swordDataHelper.getSword(),
+		parent.mc.getRenderItem().renderItemAndEffectIntoGUI(swordData.getSword(),
 				(widthOffset + 15) / 3, (heightOffset + 43) / 3);
 		
 		// Now draw the strings next to the rendered image.

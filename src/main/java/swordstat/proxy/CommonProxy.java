@@ -22,7 +22,7 @@ import swordstat.network.TellClientToSortEntitiesMessageHandler;
 public class CommonProxy {
 	
 	//public final static SimpleNetworkWrapper network;
-	public final static OpenGUIController OPEN_GUI_CONTROLLER = new OpenGUIController();
+	public static final OpenGUIController OPEN_GUI_CONTROLLER = new OpenGUIController();
 
 	public void fmlLifeCycleEvent( FMLPreInitializationEvent event ) {
 		
@@ -59,6 +59,7 @@ public class CommonProxy {
 
 		if ( Loader.isModLoaded("tconstruct") ){
 			TinkerIntegration.runServerIntegration();
-		}		
+		}
+				
 	}
 }

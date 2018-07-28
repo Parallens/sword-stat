@@ -1,5 +1,7 @@
 package swordstat.gui;
 
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -27,19 +29,39 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 	private static final int MAX_WIDTH = 53;
 	private static final int MAX_HEIGHT = 64;
 	/** Cache of entities so we aren't creating a new entity on every call.*/
-	private static Map<String, Entity> entityCache = new HashMap<>();
+	private static Map<Class<? extends Entity>, Entity> entityCache = new HashMap<>();
 	
 	private float oldMouseX, oldMouseY;
-	private TreeSet<String> entityStrings;
-	private TreeSet<String> filteredEntityStrings;
+	private final TreeSet<Class<? extends Entity>> entityClasses;
+	private final TreeSet<Class<? extends Entity>> filteredEntityClasses;
 	private final SwordKillsHelper swordKillsHelper;
 	// Made static for user convenience
 	/** True if only kills are to be shown, false otherwise.*/
 	private static boolean useFiltered = true;
 	
+	public static class EntityClassComparator implements Comparator<Class<? extends Entity>> {
+
+		private SwordKillsHelper swordKillsHelper;
+		
+		public EntityClassComparator( final SwordKillsHelper swordKillsHelper ) {
+			
+			this.swordKillsHelper = swordKillsHelper;
+		}
+		
+		@Override
+		public int compare( Class<? extends Entity> arg0,
+				Class<? extends Entity> arg1 ) {
+			
+			String s0 = swordKillsHelper.getEntityStringFromClass(arg0);
+			String s1 = swordKillsHelper.getEntityStringFromClass(arg1);
+			return s0.compareTo(s1);
+		}
+		
+	}
+	
 
 	public GuiEntityScrollingList( int parentWidth, int parentHeight, int screenWidth, int screenHeight,
-			SwordKillsHelper swordKillsHelper, Set<String> entityStrings) {
+			SwordKillsHelper swordKillsHelper, Collection<Class<? extends Entity>> entityClasses ) {
 		
 		super(
 				Minecraft.getMinecraft(), 
@@ -56,12 +78,14 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 				parentHeight		 // Seems to be height of GUI
 		);
 		this.swordKillsHelper = swordKillsHelper;
-		this.entityStrings = new TreeSet<String>(entityStrings);
+		EntityClassComparator entityClassComparator = new EntityClassComparator(swordKillsHelper);
+		this.entityClasses = new TreeSet<>(entityClassComparator);
+		this.entityClasses.addAll(entityClasses);
 		//Filter out the entities with no kills.
-		filteredEntityStrings = new TreeSet<String>();
-		for ( String entityString : entityStrings ){
-			if ( swordKillsHelper.getEntityKillsFromString(entityString) != 0 ){
-				filteredEntityStrings.add(entityString);
+		this.filteredEntityClasses = new TreeSet<>(entityClassComparator);
+		for ( Class<? extends Entity> entityClass: entityClasses){
+			if ( swordKillsHelper.getEntityKillsFromClass(entityClass) != 0 ){
+				filteredEntityClasses.add(entityClass);
 			}
 		}
 	}
@@ -69,7 +93,7 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 	@Override
 	protected int getSize() {
 
-		return ( useFiltered )? filteredEntityStrings.size() : entityStrings.size();
+		return (useFiltered)? filteredEntityClasses.size() : entityClasses.size();
 	}
 	
 	@Override
@@ -106,9 +130,9 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 	protected void drawSlot( int slotIdx, int entryRight, int slotTop,
 			int slotBuffer, Tessellator tess ) {
 		
-		Set<String> stringSet = ( useFiltered )? filteredEntityStrings : entityStrings;
-		String entityString = (String) stringSet.toArray()[slotIdx];
-		int kill = swordKillsHelper.getEntityKillsFromString(entityString);
+		Set<Class<? extends Entity>> stringSet = ( useFiltered )? filteredEntityClasses: entityClasses;
+		Class<? extends Entity> entityClass = (Class<? extends Entity>) stringSet.toArray()[slotIdx];
+		int kill = swordKillsHelper.getEntityKillsFromClass(entityClass);
 		GlStateManager.color(1, 1, 1, 1);
 	    GlStateManager.pushMatrix();
 	    Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(
@@ -130,10 +154,9 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 	    		256F, 256F
 	    );
 	    
-	    if ( !entityCache.containsKey(entityString) ){
-	    	Class<? extends Entity> entityClass = swordKillsHelper.getEntityClassFromString(entityString);
+	    if ( !entityCache.containsKey(entityClass) ){
 			try {
-				entityCache.put(entityString, entityClass.getConstructor(World.class).
+				entityCache.put(entityClass, entityClass.getConstructor(World.class).
 						newInstance(Minecraft.getMinecraft().player.world));
 			} catch (Exception e) {
 				// Should never happen, each entity is instantiated like this in the entityHandler
@@ -141,7 +164,7 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 				return;
 			}
 	    }
-	    Entity entity = entityCache.get(entityString);
+	    Entity entity = entityCache.get(entityClass);
 	    // Render the entity:
 
 		int scale = RenderUtil.getScale(

@@ -1,8 +1,7 @@
 package swordstat.event;
 
-import java.util.Set;
-
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -14,12 +13,13 @@ import swordstat.gui.page.PageSword;
 import swordstat.swordinfo.SwordData;
 import swordstat.swordinfo.SwordKillsHelper;
 
+import com.google.common.collect.Multimap;
+
 public class AddStandardPagesToGuiEventHandler {
 
 	@SubscribeEvent(priority=EventPriority.HIGH)	
 	public void onEvent( final SwordStatGuiCalledEvent event ) {
 
-		
 		SwordData swordDataHelper = new SwordData(
 				event.getItemStack(), event.getItemStackTagCompound().getCompoundTag(SwordStat.MODID),
 				event.getPlayer()
@@ -29,12 +29,15 @@ public class AddStandardPagesToGuiEventHandler {
 				event.getEntitySorting()
 		);
 
-		Set<String> modStrings = swordKillsHelper.getModStrings();		
+		Multimap<String, Class<? extends Entity>> modIDToEntityClassMapping =
+				SwordStat.CLIENT_RESOURCE_LOCATOR.getModIDToEntityClassMapping();		
 		ISwordPages pages = event.getSwordPages();
 		// Initialise all of the pages which correspond to tabs
 		pages.appendPage(new PageSword(swordDataHelper));
 		// Add the vanilla tab
-		pages.appendPage(new PageEntity(swordKillsHelper.getEntityStringsFromMod(swordKillsHelper.getVanillaString()), swordKillsHelper.getModCreativeTab(swordKillsHelper.getVanillaString()), swordKillsHelper){
+		pages.appendPage(new PageEntity(
+				"Minecraft", modIDToEntityClassMapping.get("Minecraft"),
+				event.getEntitySorting(), swordKillsHelper){
 				
 			@Override
 			public ItemStack getIconItemStack() {
@@ -49,10 +52,13 @@ public class AddStandardPagesToGuiEventHandler {
 				return "Vanilla";
 			}
 		});
-		for ( String modString : modStrings ){
-			if ( modString.equals(swordKillsHelper.getVanillaString()) ) continue;
-			CreativeTabs inferedCreativeTab = swordKillsHelper.getModCreativeTab(modString);
-			pages.appendPage(new PageEntity(swordKillsHelper.getEntityStringsFromMod(modString), inferedCreativeTab, swordKillsHelper));
+		for ( String modID: modIDToEntityClassMapping.keys() ){
+			if ( modID.equals("Minecraft") ) continue;
+			String modName = SwordStat.CLIENT_RESOURCE_LOCATOR.getModNameFromID(modID);
+			pages.appendPage(new PageEntity(
+					modName, modIDToEntityClassMapping.get(modID),
+					event.getEntitySorting(), swordKillsHelper)
+			);
 		}
 		
 	}

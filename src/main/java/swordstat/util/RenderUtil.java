@@ -19,9 +19,7 @@ import net.minecraft.util.ResourceLocation;
 public final class RenderUtil {
 	
 	
-	private RenderUtil() {
-		
-	}
+	private RenderUtil() {}
 	
 	/**
 	 * 

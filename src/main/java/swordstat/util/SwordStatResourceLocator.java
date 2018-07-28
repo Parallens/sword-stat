@@ -1,11 +1,18 @@
 package swordstat.util;
 
 import java.util.HashMap;
+import java.util.Map;
 
+import net.minecraft.entity.Entity;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import swordstat.init.EntitySorter;
 import swordstat.init.EntitySorter.EntitySorting;
 import swordstat.init.EntitySorter.IEntityGroupSorter;
+import swordstat.init.EntitySortingInit;
+
+import com.google.common.collect.ImmutableMultimap;
 
 public class SwordStatResourceLocator {
 	
@@ -16,6 +23,7 @@ public class SwordStatResourceLocator {
 	private final EntitySorter entitySorter = 
 			new EntitySorter(ForgeRegistries.ENTITIES.getValuesCollection());
 	private EntitySorting entitySorting = null;
+	private ImmutableMultimap<String, Class<? extends Entity>> modIDToEntityClassMapping;
 	
 	public EntitySorter getEntitySorter() {
 		
@@ -34,5 +42,32 @@ public class SwordStatResourceLocator {
 	public void setEntitySorting( EntitySorting entitySorting ) {
 		
 		this.entitySorting = entitySorting;
-	}	
+	}
+	
+	public ImmutableMultimap<String, Class<? extends Entity>> getModIDToEntityClassMapping() {
+		
+		if ( modIDToEntityClassMapping == null ){
+			initialiseModIDToEntityClassMapping();
+		}
+		return modIDToEntityClassMapping;
+	}
+	
+	private void initialiseModIDToEntityClassMapping() {
+
+		modIDToEntityClassMapping = ImmutableMultimap.<String, Class<? extends Entity>>builder()
+				.putAll(EntitySortingInit.
+						createModIDToEntityClassMapping(ForgeRegistries.ENTITIES.getValuesCollection()))
+				.build();
+	}
+	
+	public String getModNameFromID( final String modID ) {
+		
+        Map<String, ModContainer> modMap = Loader.instance().getIndexedModList();
+        for ( Map.Entry<String, ModContainer> modEntry : modMap.entrySet() ){
+        	if ( modEntry.getValue().getModId().equals(modID) ){
+        		return modEntry.getValue().getName();
+        	}
+        }
+        return "unknown";
+	}
 }

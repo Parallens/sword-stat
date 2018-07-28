@@ -1,19 +1,63 @@
 package swordstat.init;
 
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.client.resources.Locale;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
+
+import org.apache.commons.lang3.text.WordUtils;
+
 import swordstat.SwordStat;
 import swordstat.init.EntitySorter.EntitySorting;
 import swordstat.init.EntitySorter.IEntityGroupSorter;
 import swordstat.util.ServerResourceLocator;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
 public final class EntitySortingInit {
+	
+	
+
+	/**
+	 * Return a Multimap of mod ids to entities added by those mods. Thanks to <a href="https://github.com/McJtyMods/TheOneProbe/blob/9c1e1d94c30d795dc22ad35f752dbb8182250220/src/main/java/mcjty/theoneprobe/Tools.java">the one probe</a>
+	 * for this one.
+	 * 	
+	 * @param entities Collection of entities to be sorted by mod id
+	 * @return Multimap of mod ids to entities added by those mods
+	 */
+    public static Multimap<String, Class<? extends Entity>> 
+    	createModIDToEntityClassMapping( Collection<EntityEntry> entities ) {
+    	
+    	Multimap<String, Class<? extends Entity>> modIDToEntityClassMapping = HashMultimap.create(128, 32);
+    	for ( EntityEntry entry : entities ){
+    		EntityRegistry.EntityRegistration modSpawn = EntityRegistry.instance().lookupModSpawn(entry.getEntityClass(), true);
+    		String modID;
+    		if ( modSpawn == null ){
+    			modID = "Minecraft";
+    		}
+    		else {
+    			ModContainer container = modSpawn.getContainer();
+    			if ( container == null ){
+    				modID = "Minecraft";
+    			}
+    			else {
+    	    		modID = container.getModId();    				
+    			}
+    		}
+    		modIDToEntityClassMapping.put(modID, entry.getEntityClass());
+    	}
+        return modIDToEntityClassMapping;
+}	
 	
 	/**
 	 * Create an EntitySorting with (currently hardcoded) sorters
