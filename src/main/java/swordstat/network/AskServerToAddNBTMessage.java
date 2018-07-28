@@ -1,5 +1,6 @@
 package swordstat.network;
 
+import java.util.Arrays;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -10,6 +11,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import swordstat.SwordStat;
+import swordstat.swordinfo.SwordDataEnum;
 import swordstat.util.ServerResourceLocator;
 import swordstat.util.swordutil.SwordNBTHelper;
 
@@ -60,10 +62,12 @@ public class AskServerToAddNBTMessage implements IMessage {
 		    		
 		    		SwordNBTHelper swordNBTHelper = SwordStat.SERVER_RESOURCE_LOCATOR.getSwordNBTHelper();
 		    		ItemStack itemStack = serverPlayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+
 		    		try {
 		    			swordNBTHelper.attachNBT(itemStack, false, serverPlayer.getServerWorld());
 		    		}
 		    		catch ( IllegalArgumentException e ){}
+		    		
 		    		swordNBTHelper.updateNBTData(itemStack, serverPlayer.getServerWorld());
 		    		// We don't send it in the return below, we send it here to ensure processing above is done
 		    		if ( message.openGUIAfterProcessing ){

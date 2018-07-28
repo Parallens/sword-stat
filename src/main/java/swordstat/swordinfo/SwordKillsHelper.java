@@ -1,77 +1,61 @@
 package swordstat.swordinfo;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.regex.Pattern;
+import java.util.NoSuchElementException;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraftforge.common.util.Constants;
+import scala.actors.threadpool.Arrays;
 import swordstat.SwordStat;
-import swordstat.init.EntitySorter.EntitySorting;
-import swordstat.util.SwordStatResourceLocator;
 
-import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableMap;
 
+/**
+ * Encapsulates sword information pertaining to how many 'kills' a sword has.
+ */
 public final class SwordKillsHelper {
-	
-	private static final Pattern entitySplit = Pattern.compile("\\.(entity)|(entities)\\.");
 	
 	/** The NBTTagCompound stored on the sword. **/
 	private final NBTTagCompound swordTag;
-	private final int[] bossKills, monsterKills, passiveKills;
+	private final int[] entityKills;
+	private Map<String, Integer> entityStringToKillsMapping =  new HashMap<>();
+	private ImmutableBiMap<String, Class<? extends Entity>> entityStringToClassBiMap;
 	
-	private Map<String, Integer> bossKillsMapping,  monsterKillsMapping, passiveKillsMapping;
-	// Old TreeMaps
-	private Map<String, Class<? extends Entity>> bossClassMapping,  monsterClassMapping, passiveClassMapping;
-	private Map<String, Integer> entityStringToKillsMapping;
-	private BiMap<String, Class<? extends Entity>> entityStringToClassBiMap;
-	
-	public enum EntityType {
-		BOSS, MONSTER, PASSIVE
-	};
-	
-	public SwordKillsHelper( final NBTTagCompound swordTag, final EntitySorting entitySorting ) {
+	public SwordKillsHelper( final NBTTagCompound swordTag, 
+			ImmutableMap<String, Class<? extends Entity>> entityClassNameToEntityClassMapping ) {
 		
 		this.swordTag = swordTag;
-		bossKills = swordTag.getIntArray(SwordDataEnum.BOSS_KILLS.toString());
-		monsterKills = swordTag.getIntArray(SwordDataEnum.MONSTER_KILLS.toString());
-		passiveKills = swordTag.getIntArray(SwordDataEnum.PASSIVE_KILLS.toString());
-		// We want:
-		// A mapping of string classes to class objects
-		// A mapping of string classes to kills
-		// A mapping of mods to sets containing string classes
-		bossClassMapping = entitySorting.getSorting(SwordStatResourceLocator.BOSS_STRING);
-		monsterClassMapping = entitySorting.getSorting(SwordStatResourceLocator.MONSTER_STRING);
-		passiveClassMapping = entitySorting.getSorting(SwordStatResourceLocator.PASSIVE_STRING);
-		entityStringToClassBiMap = HashBiMap.create();
-		bossKillsMapping = new HashMap<String, Integer>();
-		monsterKillsMapping =  new HashMap<String, Integer>();
-		passiveKillsMapping = new HashMap<String, Integer>();
-		int i = 0;
-		for ( Entry<String, Class<? extends Entity>> entry : bossClassMapping.entrySet() ){
-			bossKillsMapping.put(entry.getValue().toString(), bossKills[i]);
-			entityStringToClassBiMap.put(entry.getValue().toString(), entry.getValue());i++;
+		this.entityKills = swordTag.getIntArray(SwordDataEnum.ENTITY_KILLS_ARRAY.toString());
+
+		this.entityStringToClassBiMap = ImmutableBiMap
+				.<String, Class<? extends Entity>>builder().putAll(entityClassNameToEntityClassMapping)
+				.build();
+		
+		NBTTagList entityNameTagList= swordTag.getTagList(SwordDataEnum.ENTITY_NAMES_ARRAY.toString(),
+				Constants.NBT.TAG_COMPOUND);
+		for ( int i = 0; i < entityNameTagList.tagCount(); i++ ){
+			NBTTagCompound monoTag;
+			try {
+				monoTag = (NBTTagCompound) entityNameTagList.get(i);
+			}
+			catch ( ClassCastException e ){
+				continue;
+			}
+			String tagClass;
+			try {
+				tagClass = monoTag.getKeySet().iterator().next();				
+			}
+			catch ( NoSuchElementException e ){
+				continue;
+			}
+			entityStringToKillsMapping.put(tagClass, (i >= entityKills.length)? 0 : entityKills[i]);
 		}
-		i = 0;
-		for ( Entry<String, Class<? extends Entity>> entry : monsterClassMapping.entrySet() ){
-			monsterKillsMapping.put(entry.getValue().toString(), monsterKills[i]);
-			entityStringToClassBiMap.put(entry.getValue().toString(), entry.getValue());i++;
-		}
-		i = 0;
-		for ( Entry<String, Class<? extends Entity>> entry : passiveClassMapping.entrySet() ){
-			passiveKillsMapping.put(entry.getValue().toString(), passiveKills[i]);
-			entityStringToClassBiMap.put(entry.getValue().toString(), entry.getValue());i++;
-		}
-		entityStringToKillsMapping = new HashMap<>();
-		entityStringToKillsMapping.putAll(bossKillsMapping);
-		entityStringToKillsMapping.putAll(monsterKillsMapping);
-		entityStringToKillsMapping.putAll(passiveKillsMapping);
-		// Now create the different
 	}
 	
 	/**
@@ -104,21 +88,21 @@ public final class SwordKillsHelper {
 		
 		return SwordStat.CLIENT_RESOURCE_LOCATOR.getModIDToEntityClassMapping().keys().size();
 	}
-
 	
-	public Set<Class<? extends Entity>> getEntityStringsFromMod( String modID ) {
-
-		if ( modID == null ){
-			return new HashSet<Class<? extends Entity>>();
-		}
-		else {
-			return new HashSet<>(SwordStat.CLIENT_RESOURCE_LOCATOR.getModIDToEntityClassMapping().get(modID));
-		}
-	}
-	
+	/**
+	 * Uses Class String of the entity.
+	 * 
+	 * @param entityString
+	 * @return
+	 */
 	public int getEntityKillsFromString( String entityString ) {
 		
-		return entityStringToKillsMapping.get(entityString);
+		if ( entityStringToKillsMapping.containsKey(entityString) ){
+			return entityStringToKillsMapping.get(entityString);
+		}
+		else {
+			return 0;
+		}
 	}
 	
 	public String getEntityStringFromClass( Class<? extends Entity> entityClass ) {
@@ -153,7 +137,7 @@ public final class SwordKillsHelper {
 	public int getTotalKills() {
 		
 		int total = 0;
-		for ( Integer kill : entityStringToKillsMapping.values() ){
+		for ( int kill : entityStringToKillsMapping.values() ){
 			total += kill;
 		}
 		return total;

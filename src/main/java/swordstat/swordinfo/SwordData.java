@@ -26,9 +26,7 @@ public final class SwordData {
 	private final boolean isSwordCrafted;
 	private final String IRLAge;
 	private final long inGameAge;
-	private final int[] monsterKills;
-	private final int[] bossKills;
-	private final int[] passiveKills;
+	private final int[] entityKills;
 	
 	
 	public SwordData( ItemStack sword, NBTTagCompound tagCompound, EntityPlayer playerIn ) {
@@ -53,17 +51,9 @@ public final class SwordData {
 		this.playerKills = ( tagCompound.hasKey(playerKillsKey) )?
 				tagCompound.getInteger(playerKillsKey) : 1337;
 		
-		String monsterKillsKey = SwordDataEnum.MONSTER_KILLS.toString();
-		this.monsterKills = ( tagCompound.hasKey(monsterKillsKey) )?
-				tagCompound.getIntArray(monsterKillsKey) : new int[] {};
-				
-		String bossKillsKey = SwordDataEnum.BOSS_KILLS.toString();
-		this.bossKills = ( tagCompound.hasKey(bossKillsKey) )?
-				tagCompound.getIntArray(bossKillsKey) : new int[] {};
-
-		String passiveKillsKey = SwordDataEnum.PASSIVE_KILLS.toString();
-		this.passiveKills = ( tagCompound.hasKey(passiveKillsKey) )?
-				tagCompound.getIntArray(passiveKillsKey) : new int[] {};
+		String entityKillsKey = SwordDataEnum.ENTITY_KILLS_ARRAY.toString();
+		this.entityKills = ( tagCompound.hasKey(entityKillsKey) )?
+				tagCompound.getIntArray(entityKillsKey) : new int[] {};
 
 		String inGameAgeKey = SwordDataEnum.IRL_DATE_CRAFTED.toString();
 		this.inGameAge = ( tagCompound.hasKey(inGameAgeKey) )?
@@ -152,19 +142,8 @@ public final class SwordData {
 		return inGameAge;
 	}
 
-
-	public int[] getMonsterKills() {
-		return monsterKills;
-	}
-
-
-	public int[] getBossKills() {
-		return bossKills;
-	}
-
-
-	public int[] getPassiveKills() {
-		return passiveKills;
+	public int[] getEntityKills() {
+		return entityKills;
 	}
 
 

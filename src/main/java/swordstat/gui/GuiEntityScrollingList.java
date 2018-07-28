@@ -83,7 +83,7 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 		this.entityClasses.addAll(entityClasses);
 		//Filter out the entities with no kills.
 		this.filteredEntityClasses = new TreeSet<>(entityClassComparator);
-		for ( Class<? extends Entity> entityClass: entityClasses){
+		for ( Class<? extends Entity> entityClass : entityClasses ){
 			if ( swordKillsHelper.getEntityKillsFromClass(entityClass) != 0 ){
 				filteredEntityClasses.add(entityClass);
 			}

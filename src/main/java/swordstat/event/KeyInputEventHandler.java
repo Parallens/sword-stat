@@ -1,5 +1,7 @@
 package swordstat.event;
 
+import java.util.Arrays;
+import swordstat.swordinfo.SwordDataEnum;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;

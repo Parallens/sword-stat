@@ -1,6 +1,5 @@
 package swordstat.event;
 
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -20,17 +19,19 @@ public class AddStandardPagesToGuiEventHandler {
 	@SubscribeEvent(priority=EventPriority.HIGH)	
 	public void onEvent( final SwordStatGuiCalledEvent event ) {
 
+		System.out.println(event.getPlayer().world.isRemote);
 		SwordData swordDataHelper = new SwordData(
 				event.getItemStack(), event.getItemStackTagCompound().getCompoundTag(SwordStat.MODID),
 				event.getPlayer()
 		);
 		SwordKillsHelper swordKillsHelper = new SwordKillsHelper(
 				event.getItemStackTagCompound().getCompoundTag(SwordStat.MODID),
-				event.getEntitySorting()
+				SwordStat.CLIENT_RESOURCE_LOCATOR.getEntityClassNameToEntityClassMapping()
 		);
 
 		Multimap<String, Class<? extends Entity>> modIDToEntityClassMapping =
-				SwordStat.CLIENT_RESOURCE_LOCATOR.getModIDToEntityClassMapping();		
+				SwordStat.CLIENT_RESOURCE_LOCATOR.getModIDToEntityClassMapping();	
+
 		ISwordPages pages = event.getSwordPages();
 		// Initialise all of the pages which correspond to tabs
 		pages.appendPage(new PageSword(swordDataHelper));
@@ -52,7 +53,7 @@ public class AddStandardPagesToGuiEventHandler {
 				return "Vanilla";
 			}
 		});
-		for ( String modID: modIDToEntityClassMapping.keys() ){
+		for ( String modID: modIDToEntityClassMapping.keySet() ){
 			if ( modID.equals("Minecraft") ) continue;
 			String modName = SwordStat.CLIENT_RESOURCE_LOCATOR.getModNameFromID(modID);
 			pages.appendPage(new PageEntity(

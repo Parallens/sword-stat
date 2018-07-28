@@ -49,8 +49,8 @@ public class PageEntity extends AbstractGuiSwordPage {
 		// Sort the entity strings into monsters, bosses and passives/misc
 		EntityClassComparator entityClassComparator = new EntityClassComparator(swordKillsHelper);
 		bossEntityClasses = new TreeSet<>(entityClassComparator);
-		monsterEntityClasses= new TreeSet<>(entityClassComparator);
-		passiveEntityClasses= new TreeSet<>(entityClassComparator);
+		monsterEntityClasses = new TreeSet<>(entityClassComparator);
+		passiveEntityClasses = new TreeSet<>(entityClassComparator);
 
 		for ( Class<? extends Entity> entityClass : entityClasses ){
 			if ( entitySorting.getSorting(SwordStatResourceLocator.BOSS_STRING).containsValue(entityClass) ){

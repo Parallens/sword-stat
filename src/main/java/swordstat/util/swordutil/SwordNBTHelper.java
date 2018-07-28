@@ -3,6 +3,7 @@ package swordstat.util.swordutil;
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Arrays;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -10,6 +11,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import swordstat.SwordStat;
 import swordstat.init.EntitySorter.EntitySorting;
 import swordstat.swordinfo.SwordDataEnum;
@@ -17,17 +19,12 @@ import swordstat.util.ServerResourceLocator;
 
 public final class SwordNBTHelper {
 	
-	private final Map<String, Class<? extends Entity>> bossMapping;
-	private final Map<String, Class<? extends Entity>> monsterMapping;
-	private final Map<String, Class<? extends Entity>> passiveMapping;
-	
-	//private final Map<String, Class<? extends Entity>> entityStringToClassMapping;
+	private final Map<String, Class<? extends Entity>> entityStringToClassMapping;
 	
 	public SwordNBTHelper( final EntitySorting entitySorting ) {
 		
-		this.bossMapping = entitySorting.getSorting(ServerResourceLocator.BOSS_STRING);
-		this.monsterMapping = entitySorting.getSorting(ServerResourceLocator.MONSTER_STRING);
-		this.passiveMapping = entitySorting.getSorting(ServerResourceLocator.PASSIVE_STRING);
+		this.entityStringToClassMapping = SwordStat.CLIENT_RESOURCE_LOCATOR
+				.getEntityClassNameToEntityClassMapping();
 	}
 	
 	/**
@@ -45,19 +42,7 @@ public final class SwordNBTHelper {
 					"Sword already has an appropriate NBT sub-compound attached!"
 			);
 		}
-		/*
-		 * We attach: 
-		 * total kills
-		 * date(irl and in game) sword created if applicable
-		 * mobs mapped to kills
-		 * 
-		 * We don't attach:
-		 * durability/charge
-		 * current master
-		 * sword type/name
-		 * times repaired?
-		 * cooldown?
-		 */
+
 		NBTTagCompound compound = new NBTTagCompound();
 		// Add as sub-compound to minimize conflicts.
 		Date dNow = new Date();
@@ -86,36 +71,15 @@ public final class SwordNBTHelper {
 				SwordDataEnum.PLAYER_KILLS.toString(),
 				0
 		);
+		
 		compound.setIntArray(
-				SwordDataEnum.BOSS_KILLS.toString(),
-				new int[bossMapping.size()]
-		);
-		compound.setIntArray(
-				SwordDataEnum.MONSTER_KILLS.toString(),
-				new int[monsterMapping.size()]
-		);
-		compound.setIntArray(
-				SwordDataEnum.PASSIVE_KILLS.toString(),
-				new int[passiveMapping.size()]
+				SwordDataEnum.ENTITY_KILLS_ARRAY.toString(),
+				new int[entityStringToClassMapping.size()]
 		);
 		
-		/* Now for the names of the mobs: 
-		 * These are necessary as well as the integer arrays in order for the
-		 * mod to update the kills correctly if new mod that adds entities is
-		 * added.
-		 */
-		
 		compound.setTag(
-				SwordDataEnum.BOSS_NAMES.toString(),
-				getNBTList(bossMapping)
-		);
-		compound.setTag(
-				SwordDataEnum.MONSTER_NAMES.toString(),
-				getNBTList(monsterMapping)
-		);
-		compound.setTag(
-				SwordDataEnum.PASSIVE_NAMES.toString(),
-				getNBTList(passiveMapping)
+				SwordDataEnum.ENTITY_NAMES_ARRAY.toString(),
+				getNBTList(entityStringToClassMapping)
 		);
 		
 		NBTTagCompound baseCompound = 
@@ -124,50 +88,37 @@ public final class SwordNBTHelper {
 		sword.setTagCompound(baseCompound);
 	}
 	
-	public void incNBTData( ItemStack sword, SwordDataEnum data,
-		Class<? extends Entity> entityClass )  
+	public void incNBTData( ItemStack sword, Class<? extends Entity> entityClass )  
 				throws IllegalArgumentException {
 		
 		if ( ! itemStackValidCheck(sword) ){
 			throw new IllegalArgumentException("Invalid itemstack!");
 		}
-		SwordDataEnum listEnum;
-		if ( data.equals(SwordDataEnum.BOSS_KILLS) ){
-			listEnum = SwordDataEnum.BOSS_NAMES;
-		}
-		else if ( data.equals(SwordDataEnum.MONSTER_KILLS) ){
-			listEnum = SwordDataEnum.MONSTER_NAMES;
-		}
-		else if ( data.equals(SwordDataEnum.PASSIVE_KILLS) ){
-			listEnum = SwordDataEnum.PASSIVE_NAMES;
-		}
-		else {
-			throw new IllegalArgumentException(
-					"Data not editable with called method."
-			);			
-		}
+		
 		// Get NBT and edit it.
-		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(SwordStat.MODID).copy();
-		int[] kills = tag.getIntArray(data.toString());
-		// DEBUG
-		//System.out.println(kills);
-		NBTTagList tagList = tag.getTagList(listEnum.toString(), Constants.NBT.TAG_COMPOUND);
-		// DEBUG
-		//System.out.println("tagList: " + tagList);
+		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(SwordStat.MODID);
+		int[] kills = tag.getIntArray(SwordDataEnum.ENTITY_KILLS_ARRAY.toString());
+		NBTTagList tagList = tag.getTagList(SwordDataEnum.ENTITY_NAMES_ARRAY.toString(),
+				Constants.NBT.TAG_COMPOUND);
+		
 		for ( int i = 0; i < tagList.tagCount(); i++ ){
-			NBTTagCompound monoTag = (NBTTagCompound) tagList.get(i);
-			// The tag only has one element that's an int so this is ok.
-			String tagClass = monoTag.getKeySet().iterator().next();
-			if ( tagClass.equals(entityClass.toString()) ){
+			NBTTagCompound monoTag;
+			String tagClass;
+			try {
+				monoTag = (NBTTagCompound) tagList.get(i);
+				// The tag only has one element that's an int so this is ok.
+				tagClass = monoTag.getKeySet().iterator().next();
+			}
+			catch ( Exception e ){
+				continue;
+			}
+			if ( tagClass.equals(entityClass.getName()) ){
 				int index = monoTag.getInteger(tagClass);
 				kills[index]++;
-				// DEBUG
-				//System.out.println("Class: " + tagClass + " , kills: " + kills[index]);
 				break; // We've found the correct entity.
 			}
 		}
-		tag.setIntArray(data.toString(), kills);
-		sword.getTagCompound().setTag(SwordStat.MODID, tag);
+		tag.setIntArray(SwordDataEnum.ENTITY_KILLS_ARRAY.toString(), kills);
 	}
 	
 	public void incNBTData( ItemStack sword, SwordDataEnum data ) 
@@ -186,11 +137,10 @@ public final class SwordNBTHelper {
 			}
 		}
 		// Get NBT and edit it.
-		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(SwordStat.MODID).copy();
+		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(SwordStat.MODID);
 		int kills = tag.getInteger(data.toString());
 		kills++;
 		tag.setInteger(data.toString(), kills);
-		sword.getTagCompound().setTag(SwordStat.MODID, tag);
 	}
 	
 	public void updateNBTData( ItemStack sword, World world )
@@ -202,50 +152,20 @@ public final class SwordNBTHelper {
 			throw new IllegalArgumentException("Invalid itemstack!");
 		}
 		
-		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(SwordStat.MODID).copy();
+		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(SwordStat.MODID);
 		
-		NBTTagList bossTagList = tag.getTagList(
-				SwordDataEnum.BOSS_NAMES.toString(), Constants.NBT.TAG_COMPOUND
-		).copy();
-		int[] bossKills = tag.getIntArray(SwordDataEnum.BOSS_KILLS.toString());
-		
-		NBTTagList monsterTagList = tag.getTagList(
-				SwordDataEnum.MONSTER_NAMES.toString(), Constants.NBT.TAG_COMPOUND
-		).copy();
-		int[] monsterKills = tag.getIntArray(SwordDataEnum.MONSTER_KILLS.toString());
-		
-		NBTTagList passiveTagList = tag.getTagList(
-				SwordDataEnum.PASSIVE_NAMES.toString(), Constants.NBT.TAG_COMPOUND
-		).copy();
-		int[] passiveKills = tag.getIntArray(SwordDataEnum.PASSIVE_KILLS.toString());
-		
-		tag.setTag(
-				SwordDataEnum.BOSS_NAMES.toString(),
-				getNBTList(bossMapping)
+		NBTTagList entityNamesTagList = tag.getTagList(
+				SwordDataEnum.ENTITY_NAMES_ARRAY.toString(), Constants.NBT.TAG_COMPOUND
 		);
+		int[] entityKills = tag.getIntArray(SwordDataEnum.ENTITY_KILLS_ARRAY.toString());
 		tag.setTag(
-				SwordDataEnum.MONSTER_NAMES.toString(),
-				getNBTList(monsterMapping)
-		);
-		tag.setTag(
-				SwordDataEnum.PASSIVE_NAMES.toString(),
-				getNBTList(passiveMapping)
-		);
-		
-		tag.setIntArray(
-				SwordDataEnum.BOSS_KILLS.toString(),
-				updatedArray(bossMapping, bossTagList, bossKills)
+				SwordDataEnum.ENTITY_NAMES_ARRAY.toString(),
+				getNBTList(entityStringToClassMapping)
 		);
 		tag.setIntArray(
-				SwordDataEnum.MONSTER_KILLS.toString(),
-				updatedArray(monsterMapping, monsterTagList, monsterKills)
+				SwordDataEnum.ENTITY_KILLS_ARRAY.toString(),
+				updatedArray(entityStringToClassMapping, entityNamesTagList, entityKills)
 		);
-		tag.setIntArray(
-				SwordDataEnum.PASSIVE_KILLS.toString(),
-				updatedArray(passiveMapping, passiveTagList, passiveKills)
-		);
-		
-		sword.getTagCompound().setTag(SwordStat.MODID, tag);
 	}
 	
 	private boolean itemStackValidCheck( ItemStack itemStack ) {
@@ -268,7 +188,7 @@ public final class SwordNBTHelper {
 		int i = 0;
 		for ( Class<? extends Entity> entityClass : mapping.values() ){
 			NBTTagCompound shortTag = new NBTTagCompound();
-			String entityClassString = entityClass.toString();
+			String entityClassString = entityClass.getName();
 			shortTag.setInteger(entityClassString, i);
 			NBTList.appendTag(shortTag);
 			i++;
@@ -289,7 +209,7 @@ public final class SwordNBTHelper {
 				NBTTagCompound monoTag = (NBTTagCompound) old.get(j);
 				// The tag only has one element that's an int so this is ok.
 				String tagClass = monoTag.getKeySet().iterator().next();
-				if ( entityClass.toString().equals(tagClass) ){
+				if ( entityClass.getName().equals(tagClass) ){
 					newKillArr[i] = arr[j];
 				}
 			}
