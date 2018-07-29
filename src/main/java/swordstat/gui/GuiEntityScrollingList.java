@@ -19,7 +19,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.GuiScrollingList;
 import swordstat.SwordStat;
-import swordstat.swordinfo.SwordKillsHelper;
+import swordstat.swordinfo.SwordKillsData;
 import swordstat.util.RenderUtil;
 import swordstat.util.StringUtil;
 
@@ -34,26 +34,26 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 	private float oldMouseX, oldMouseY;
 	private final TreeSet<Class<? extends Entity>> entityClasses;
 	private final TreeSet<Class<? extends Entity>> filteredEntityClasses;
-	private final SwordKillsHelper swordKillsHelper;
+	private final SwordKillsData swordKillsData;
 	// Made static for user convenience
 	/** True if only kills are to be shown, false otherwise.*/
 	private static boolean useFiltered = true;
 	
 	public static class EntityClassComparator implements Comparator<Class<? extends Entity>> {
 
-		private SwordKillsHelper swordKillsHelper;
+		private SwordKillsData swordKillsData;
 		
-		public EntityClassComparator( final SwordKillsHelper swordKillsHelper ) {
+		public EntityClassComparator( final SwordKillsData swordKillsData ) {
 			
-			this.swordKillsHelper = swordKillsHelper;
+			this.swordKillsData = swordKillsData;
 		}
 		
 		@Override
 		public int compare( Class<? extends Entity> arg0,
 				Class<? extends Entity> arg1 ) {
 			
-			String s0 = swordKillsHelper.getEntityStringFromClass(arg0);
-			String s1 = swordKillsHelper.getEntityStringFromClass(arg1);
+			String s0 = swordKillsData.getEntityStringFromClass(arg0);
+			String s1 = swordKillsData.getEntityStringFromClass(arg1);
 			return s0.compareTo(s1);
 		}
 		
@@ -61,7 +61,7 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 	
 
 	public GuiEntityScrollingList( int parentWidth, int parentHeight, int screenWidth, int screenHeight,
-			SwordKillsHelper swordKillsHelper, Collection<Class<? extends Entity>> entityClasses ) {
+			SwordKillsData swordKillsData, Collection<Class<? extends Entity>> entityClasses ) {
 		
 		super(
 				Minecraft.getMinecraft(), 
@@ -77,14 +77,14 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 				parentWidth, 		 // Seems to be width of GUI
 				parentHeight		 // Seems to be height of GUI
 		);
-		this.swordKillsHelper = swordKillsHelper;
-		EntityClassComparator entityClassComparator = new EntityClassComparator(swordKillsHelper);
+		this.swordKillsData = swordKillsData;
+		EntityClassComparator entityClassComparator = new EntityClassComparator(swordKillsData);
 		this.entityClasses = new TreeSet<>(entityClassComparator);
 		this.entityClasses.addAll(entityClasses);
 		//Filter out the entities with no kills.
 		this.filteredEntityClasses = new TreeSet<>(entityClassComparator);
 		for ( Class<? extends Entity> entityClass : entityClasses ){
-			if ( swordKillsHelper.getEntityKillsFromClass(entityClass) != 0 ){
+			if ( swordKillsData.getEntityKillsFromClass(entityClass) != 0 ){
 				filteredEntityClasses.add(entityClass);
 			}
 		}
@@ -132,7 +132,7 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 		
 		Set<Class<? extends Entity>> stringSet = ( useFiltered )? filteredEntityClasses: entityClasses;
 		Class<? extends Entity> entityClass = (Class<? extends Entity>) stringSet.toArray()[slotIdx];
-		int kill = swordKillsHelper.getEntityKillsFromClass(entityClass);
+		int kill = swordKillsData.getEntityKillsFromClass(entityClass);
 		GlStateManager.color(1, 1, 1, 1);
 	    GlStateManager.pushMatrix();
 	    Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(
@@ -208,7 +208,7 @@ public class GuiEntityScrollingList extends GuiScrollingList {
 	    		left + 67 + 3 + fontRenderer.getStringWidth("kills: "),
 	    		slotTop + 35, StringUtil.getKillColour(kill)
 	    );
-	    float total = (float)swordKillsHelper.getTotalKills();
+	    float total = (float)swordKillsData.getTotalKills();
 	    float percent = ( total > 0 )? (float)kill / total * 100 : 0F;
 	    
 	    

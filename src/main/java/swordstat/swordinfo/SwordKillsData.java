@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableMap;
 /**
  * Encapsulates sword information pertaining to how many 'kills' a sword has.
  */
-public final class SwordKillsHelper {
+public final class SwordKillsData {
 	
 	/** The NBTTagCompound stored on the sword. **/
 	private final NBTTagCompound swordTag;
@@ -27,7 +27,7 @@ public final class SwordKillsHelper {
 	private Map<String, Integer> entityStringToKillsMapping =  new HashMap<>();
 	private ImmutableBiMap<String, Class<? extends Entity>> entityStringToClassBiMap;
 	
-	public SwordKillsHelper( final NBTTagCompound swordTag, 
+	public SwordKillsData( final NBTTagCompound swordTag, 
 			ImmutableMap<String, Class<? extends Entity>> entityClassNameToEntityClassMapping ) {
 		
 		this.swordTag = swordTag;

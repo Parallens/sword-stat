@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 import swordstat.gui.GuiEntityScrollingList;
 import swordstat.gui.GuiEntityScrollingList.EntityClassComparator;
 import swordstat.init.EntitySorter.EntitySorting;
-import swordstat.swordinfo.SwordKillsHelper;
+import swordstat.swordinfo.SwordKillsData;
 import swordstat.util.SwordStatResourceLocator;
 
 public class PageEntity extends AbstractGuiSwordPage {
@@ -24,7 +24,7 @@ public class PageEntity extends AbstractGuiSwordPage {
 	private final Collection<Class<? extends Entity>> entityClasses;
 	private final EntitySorting entitySorting;
 	private final Set<Class<? extends Entity>> bossEntityClasses, monsterEntityClasses, passiveEntityClasses;
-	private final SwordKillsHelper swordKillsHelper;
+	private final SwordKillsData swordKillsData;
 	//private final CreativeTabs inferedCreativeTab;
 	private GuiEntityScrollingList entityScrollingList;
 	// static for convenience
@@ -38,16 +38,16 @@ public class PageEntity extends AbstractGuiSwordPage {
 	}
 	
 	public PageEntity( final String modTitle, final Collection<Class<? extends Entity>> entityClasses,
-			final EntitySorting entitySorting, final SwordKillsHelper swordKillsHelper ) {
+			final EntitySorting entitySorting, final SwordKillsData swordKillsData ) {
 		
 		super();
 		this.modTitle = modTitle;
 		this.entityClasses = entityClasses;
 		this.entitySorting = entitySorting;
-		this.swordKillsHelper = swordKillsHelper;
+		this.swordKillsData = swordKillsData;
 		
 		// Sort the entity strings into monsters, bosses and passives/misc
-		EntityClassComparator entityClassComparator = new EntityClassComparator(swordKillsHelper);
+		EntityClassComparator entityClassComparator = new EntityClassComparator(swordKillsData);
 		bossEntityClasses = new TreeSet<>(entityClassComparator);
 		monsterEntityClasses = new TreeSet<>(entityClassComparator);
 		passiveEntityClasses = new TreeSet<>(entityClassComparator);
@@ -82,7 +82,7 @@ public class PageEntity extends AbstractGuiSwordPage {
 		}
 		entityScrollingList = new GuiEntityScrollingList(
 				getParentWidth(), getParentHeight(), screenWidth, screenHeight,
-				swordKillsHelper, chosenEntityClassSet
+				swordKillsData, chosenEntityClassSet
 		);
 	}
 	
@@ -92,7 +92,7 @@ public class PageEntity extends AbstractGuiSwordPage {
 		if ( entityScrollingList == null ){
 			entityScrollingList = new GuiEntityScrollingList(
 					getParentWidth(), getParentHeight(), getScreenWidth(), getScreenHeight(),
-					swordKillsHelper, entityClasses
+					swordKillsData, entityClasses
 			);
 		}
 		entityScrollingList.drawScreen(mouseX, mouseY, partialTicks);

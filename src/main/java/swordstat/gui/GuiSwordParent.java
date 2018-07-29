@@ -17,7 +17,7 @@ import swordstat.gui.page.AbstractGuiSwordPage;
 import swordstat.gui.page.IGuiSwordPage;
 import swordstat.gui.page.ISwordPages;
 import swordstat.swordinfo.SwordData;
-import swordstat.swordinfo.SwordKillsHelper;
+import swordstat.swordinfo.SwordKillsData;
 
 @SideOnly(Side.CLIENT)
 public final class GuiSwordParent extends GuiScreen {
@@ -38,7 +38,7 @@ public final class GuiSwordParent extends GuiScreen {
 	private int tabsPresent;
 	
 	public GuiSwordParent( ISwordPages pages, World world, SwordData swordDataHelper,
-			SwordKillsHelper swordKillsHelper ) {
+			SwordKillsData swordKillsData ) {
 		
 		super();
 		this.pages = pages;

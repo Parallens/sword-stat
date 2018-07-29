@@ -1,7 +1,5 @@
 package swordstat.gui;
 
-import java.util.Arrays;
-
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,8 +15,7 @@ import swordstat.gui.page.ArrayListSwordPages;
 import swordstat.gui.page.ISwordPages;
 import swordstat.init.EntitySorter.EntitySorting;
 import swordstat.swordinfo.SwordData;
-import swordstat.swordinfo.SwordDataEnum;
-import swordstat.swordinfo.SwordKillsHelper;
+import swordstat.swordinfo.SwordKillsData;
 
 public class GuiHandler implements IGuiHandler {
 	
@@ -62,7 +59,7 @@ public class GuiHandler implements IGuiHandler {
 			SwordData swordDataHelper = new SwordData(
 					sword, tagCompoundInUse.getCompoundTag(SwordStat.MODID), player
 			);
-			SwordKillsHelper swordKillsHelper = new SwordKillsHelper(
+			SwordKillsData swordKillsData = new SwordKillsData(
 					tagCompoundInUse.getCompoundTag(SwordStat.MODID),
 					SwordStat.CLIENT_RESOURCE_LOCATOR.getEntityClassNameToEntityClassMapping()
 			);
@@ -73,7 +70,7 @@ public class GuiHandler implements IGuiHandler {
 					swordPages, sword, world, tagCompoundInUse, entitySorting, player
 			);
 			MinecraftForge.EVENT_BUS.post(event);
-			return new GuiSwordParent(swordPages, world, swordDataHelper, swordKillsHelper);
+			return new GuiSwordParent(swordPages, world, swordDataHelper, swordKillsData);
 		}
 		return null;
 	}

@@ -10,7 +10,7 @@ import swordstat.gui.page.ISwordPages;
 import swordstat.gui.page.PageEntity;
 import swordstat.gui.page.PageSword;
 import swordstat.swordinfo.SwordData;
-import swordstat.swordinfo.SwordKillsHelper;
+import swordstat.swordinfo.SwordKillsData;
 
 import com.google.common.collect.Multimap;
 
@@ -24,7 +24,7 @@ public class AddStandardPagesToGuiEventHandler {
 				event.getItemStack(), event.getItemStackTagCompound().getCompoundTag(SwordStat.MODID),
 				event.getPlayer()
 		);
-		SwordKillsHelper swordKillsHelper = new SwordKillsHelper(
+		SwordKillsData swordKillsData= new SwordKillsData(
 				event.getItemStackTagCompound().getCompoundTag(SwordStat.MODID),
 				SwordStat.CLIENT_RESOURCE_LOCATOR.getEntityClassNameToEntityClassMapping()
 		);
@@ -38,7 +38,7 @@ public class AddStandardPagesToGuiEventHandler {
 		// Add the vanilla tab
 		pages.appendPage(new PageEntity(
 				"Minecraft", modIDToEntityClassMapping.get("Minecraft"),
-				event.getEntitySorting(), swordKillsHelper){
+				event.getEntitySorting(), swordKillsData){
 				
 			@Override
 			public ItemStack getIconItemStack() {
@@ -58,7 +58,7 @@ public class AddStandardPagesToGuiEventHandler {
 			String modName = SwordStat.CLIENT_RESOURCE_LOCATOR.getModNameFromID(modID);
 			pages.appendPage(new PageEntity(
 					modName, modIDToEntityClassMapping.get(modID),
-					event.getEntitySorting(), swordKillsHelper)
+					event.getEntitySorting(), swordKillsData)
 			);
 		}
 		
