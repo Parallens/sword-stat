@@ -12,6 +12,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import swordstat.SwordStat;
 import swordstat.gui.GuiEntityScrollingList;
 import swordstat.gui.GuiEntityScrollingList.EntityClassComparator;
 import swordstat.init.EntitySorter.EntitySorting;
@@ -20,7 +21,7 @@ import swordstat.util.SwordStatResourceLocator;
 
 public class PageEntity extends AbstractGuiSwordPage {
 	
-	private final String modTitle;
+	private final String modID;
 	private final Collection<Class<? extends Entity>> entityClasses;
 	private final EntitySorting entitySorting;
 	private final Set<Class<? extends Entity>> bossEntityClasses, monsterEntityClasses, passiveEntityClasses;
@@ -37,11 +38,11 @@ public class PageEntity extends AbstractGuiSwordPage {
 		BOSS, MONSTER, PASSIVE
 	}
 	
-	public PageEntity( final String modTitle, final Collection<Class<? extends Entity>> entityClasses,
+	public PageEntity( final String modID, final Collection<Class<? extends Entity>> entityClasses,
 			final EntitySorting entitySorting, final SwordKillsData swordKillsData ) {
 		
 		super();
-		this.modTitle = modTitle;
+		this.modID = modID;
 		this.entityClasses = entityClasses;
 		this.entitySorting = entitySorting;
 		this.swordKillsData = swordKillsData;
@@ -107,13 +108,17 @@ public class PageEntity extends AbstractGuiSwordPage {
 	
 	public String getTitleString() {
 		
-		return modTitle;
+		return SwordStat.CLIENT_RESOURCE_LOCATOR.getModNameFromID(modID);
 	}
 
 	@Override
 	public ItemStack getIconItemStack() {
 
-		return new ItemStack(Items.APPLE);
+		if ( SwordStat.CLIENT_RESOURCE_LOCATOR.getModItemStackIconFromModID(modID) == null ){
+			System.out.println("Found null!");
+			return new ItemStack(Items.BAKED_POTATO);
+		}
+		return SwordStat.CLIENT_RESOURCE_LOCATOR.getModItemStackIconFromModID(modID);
 	}
 	
 	@Override

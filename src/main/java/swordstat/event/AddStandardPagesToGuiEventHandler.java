@@ -55,9 +55,8 @@ public class AddStandardPagesToGuiEventHandler {
 		});
 		for ( String modID: modIDToEntityClassMapping.keySet() ){
 			if ( modID.equals("Minecraft") ) continue;
-			String modName = SwordStat.CLIENT_RESOURCE_LOCATOR.getModNameFromID(modID);
 			pages.appendPage(new PageEntity(
-					modName, modIDToEntityClassMapping.get(modID),
+					modID, modIDToEntityClassMapping.get(modID),
 					event.getEntitySorting(), swordKillsData)
 			);
 		}

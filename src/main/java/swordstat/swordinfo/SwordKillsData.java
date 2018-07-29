@@ -59,37 +59,6 @@ public final class SwordKillsData {
 	}
 	
 	/**
-	 * Attempt to infer the creative tab a mod belongs to. If a creative cannot be found/guessed, 
-	 * null is returned.
-	 * 
-	 * @param modClassString
-	 * @return
-	 */
-	public CreativeTabs getModCreativeTab( String modClassString ) {
-		
-		String[] modSplit = modClassString.split("\\.");
-		for ( CreativeTabs creativeTab : CreativeTabs.CREATIVE_TAB_ARRAY ){
-			String creativeTabClassString = creativeTab.getClass().toString();
-			if ( creativeTabClassString.contains(modClassString) ){
-				return creativeTab;
-			}
-			String[] tabSplit = creativeTabClassString.split("\\.");
-			try {
-				if ( modSplit[0].equals(tabSplit[0]) && modSplit[1].equals(tabSplit[1]) ){
-					return creativeTab;
-				}
-			}
-			catch ( Exception e ){}
-		}
-		return null;
-	}
-	
-	public int getNumberOfModMappings() {
-		
-		return SwordStat.CLIENT_RESOURCE_LOCATOR.getModIDToEntityClassMapping().keys().size();
-	}
-	
-	/**
 	 * Uses Class String of the entity.
 	 * 
 	 * @param entityString
