@@ -2,12 +2,12 @@ package swordstat.init;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class EntitySorter {
 	
@@ -77,6 +77,15 @@ public class EntitySorter {
 			else {
 				return new HashMap<String, Class<? extends Entity>>(); 
 			}
+		}
+		
+		public Set<Class<? extends Entity>> getAllEntityClassesInSortings() {
+			
+			Set<Class<? extends Entity>> entityClasses = new HashSet<>();
+			for ( Map<String, Class<? extends Entity>> sort : entitySorts.values() ){
+				entityClasses.addAll(sort.values());
+			}
+			return entityClasses;
 		}
 		
 		public Map<String, Map<String, Class<? extends Entity>>> getInternalMapping() {

@@ -1,5 +1,8 @@
 package swordstat.event;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -19,7 +22,6 @@ public class AddStandardPagesToGuiEventHandler {
 	@SubscribeEvent(priority=EventPriority.HIGH)	
 	public void onEvent( final SwordStatGuiCalledEvent event ) {
 
-		System.out.println(event.getPlayer().world.isRemote);
 		SwordData swordDataHelper = new SwordData(
 				event.getItemStack(), event.getItemStackTagCompound().getCompoundTag(SwordStat.MODID),
 				event.getPlayer()
@@ -54,11 +56,19 @@ public class AddStandardPagesToGuiEventHandler {
 			}
 		});
 		for ( String modID: modIDToEntityClassMapping.keySet() ){
-			if ( modID.equals("Minecraft") ) continue;
-			pages.appendPage(new PageEntity(
-					modID, modIDToEntityClassMapping.get(modID),
-					event.getEntitySorting(), swordKillsData)
-			);
+			if ( modID.equals("Minecraft") ){
+				continue;
+			}
+			// check if the modID has any entities in the entity sorting
+			Set<Class<? extends Entity>> entityClasses = event.getEntitySorting().getAllEntityClassesInSortings();
+			entityClasses.retainAll(modIDToEntityClassMapping.get(modID));
+			if ( entityClasses.size() > 0 ){
+				pages.appendPage(new PageEntity(
+						modID, modIDToEntityClassMapping.get(modID),
+						event.getEntitySorting(), swordKillsData)
+				);
+			}
+
 		}
 		
 	}
