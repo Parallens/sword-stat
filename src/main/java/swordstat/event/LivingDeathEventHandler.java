@@ -14,8 +14,8 @@ import swordstat.SwordStat;
 import swordstat.init.EntitySorter.EntitySorting;
 import swordstat.proxy.CommonProxy;
 import swordstat.swordinfo.SwordDataEnum;
+import swordstat.swordinfo.SwordNBTAttacher;
 import swordstat.util.ServerResourceLocator;
-import swordstat.util.swordutil.SwordNBTHelper;
 
 public class LivingDeathEventHandler {
 	
@@ -40,20 +40,15 @@ public class LivingDeathEventHandler {
 					entitySorting.getSorting(ServerResourceLocator.PASSIVE_STRING);
 
 			// Check if it has NBT here & give it NBT
-			SwordNBTHelper swordNBTHelper = SwordStat.SERVER_RESOURCE_LOCATOR.getSwordNBTHelper();
-			try {
-				swordNBTHelper.attachNBT(sword, false, player.world);
-			}
-			catch ( IllegalArgumentException e ) {
-				// The sword already has relevant NBT attached.
-			}
-			swordNBTHelper.incNBTData(sword, SwordDataEnum.TOTAL_KILLS);
+			SwordNBTAttacher swordNBTAttacher = SwordStat.SERVER_RESOURCE_LOCATOR.getSwordNBTHelper();
+			swordNBTAttacher.attachNBT(sword, false, player.world);
+			swordNBTAttacher.incTotalKills(sword);
 			Class<? extends Entity> entityClass = event.getEntity().getClass();
 			if ( event.getEntity() instanceof EntityPlayer ){
-				swordNBTHelper.incNBTData(sword, SwordDataEnum.PLAYER_KILLS);
+				swordNBTAttacher.incPlayerKills(sword);
 			}
 			else {
-				swordNBTHelper.incNBTData(sword, entityClass);
+				swordNBTAttacher.incKillsForEntity(sword, entityClass);
 			}
 		}
 	}

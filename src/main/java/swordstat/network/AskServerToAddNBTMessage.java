@@ -12,8 +12,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import swordstat.SwordStat;
 import swordstat.swordinfo.SwordDataEnum;
+import swordstat.swordinfo.SwordNBTAttacher;
 import swordstat.util.ServerResourceLocator;
-import swordstat.util.swordutil.SwordNBTHelper;
 
 /**
  *If the player has a sword in their hand, and it does not have NBT
@@ -60,15 +60,15 @@ public class AskServerToAddNBTMessage implements IMessage {
 		    	
 		    	public void run() {
 		    		
-		    		SwordNBTHelper swordNBTHelper = SwordStat.SERVER_RESOURCE_LOCATOR.getSwordNBTHelper();
+		    		SwordNBTAttacher swordNBTAttacher = SwordStat.SERVER_RESOURCE_LOCATOR.getSwordNBTHelper();
 		    		ItemStack itemStack = serverPlayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
 
 		    		try {
-		    			swordNBTHelper.attachNBT(itemStack, false, serverPlayer.getServerWorld());
+		    			swordNBTAttacher.attachNBT(itemStack, false, serverPlayer.getServerWorld());
 		    		}
 		    		catch ( IllegalArgumentException e ){}
 		    		
-		    		swordNBTHelper.updateNBTData(itemStack, serverPlayer.getServerWorld());
+		    		swordNBTAttacher.updateNBTData(itemStack, serverPlayer.getServerWorld());
 		    		// We don't send it in the return below, we send it here to ensure processing above is done
 		    		if ( message.openGUIAfterProcessing ){
 		    			SwordStat.INSTANCE.sendTo(

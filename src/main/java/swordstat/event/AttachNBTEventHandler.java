@@ -2,8 +2,8 @@ package swordstat.event;
 
 import swordstat.SwordStat;
 import swordstat.proxy.CommonProxy;
+import swordstat.swordinfo.SwordNBTAttacher;
 import swordstat.util.ServerResourceLocator;
-import swordstat.util.swordutil.SwordNBTHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.world.World;
@@ -25,12 +25,9 @@ public class AttachNBTEventHandler {
 	
 	public void attachNBT( ItemStack itemStack, World worldObj ) {
 
-		SwordNBTHelper swordNBTHelper = SwordStat.SERVER_RESOURCE_LOCATOR.getSwordNBTHelper();
+		SwordNBTAttacher swordNBTAttacher = SwordStat.SERVER_RESOURCE_LOCATOR.getSwordNBTHelper();
 		if ( CommonProxy.OPEN_GUI_CONTROLLER.tryItem(itemStack) ){
-			swordNBTHelper.attachNBT(itemStack, true, worldObj);
-		}
-		else {
-			// Raise some error
+			swordNBTAttacher.attachNBT(itemStack, true, worldObj);
 		}
 	}
 	

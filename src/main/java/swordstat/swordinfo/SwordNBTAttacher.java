@@ -1,4 +1,4 @@
-package swordstat.util.swordutil;
+package swordstat.swordinfo;
 
 import java.util.Date;
 import java.util.Map;
@@ -14,33 +14,34 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import swordstat.SwordStat;
 import swordstat.init.EntitySorter.EntitySorting;
-import swordstat.swordinfo.SwordDataEnum;
 import swordstat.util.ServerResourceLocator;
 
-public final class SwordNBTHelper {
+/**
+ * Class responsible for attaching and manipulating NBT used by Sword Stat. 
+ */
+public final class SwordNBTAttacher {
 	
 	private final Map<String, Class<? extends Entity>> entityStringToClassMapping;
 	
-	public SwordNBTHelper( final EntitySorting entitySorting ) {
+	public SwordNBTAttacher( final EntitySorting entitySorting ) {
 		
 		this.entityStringToClassMapping = SwordStat.CLIENT_RESOURCE_LOCATOR
 				.getEntityClassNameToEntityClassMapping();
 	}
 	
 	/**
+	 * Attach NBT to the given sword. Returns true if this was successful, and false
+	 * if it was not (sword already has a tag sub-compound belonging to this mod attached).
 	 * 
 	 * @param sword ItemStack to be attached with an NBT sub-compound
 	 * @param wasCrafted Whether this method has been called following the 
 	 * 		  crafting of the passed item
-	 * @throws IllegalArgumentException
+	 * @return true if NBT was attached, false otherwise
 	 */
-	public void attachNBT( ItemStack sword, boolean wasCrafted, World worldObj )
-		throws IllegalArgumentException {
+	public boolean attachNBT( ItemStack sword, boolean wasCrafted, World worldObj ) {
 		
-		if ( sword.hasTagCompound() && sword.getTagCompound().hasKey(SwordStat.MODID) ){
-			throw new IllegalArgumentException(
-					"Sword already has an appropriate NBT sub-compound attached!"
-			);
+		if ( isSwordStatNBTAttached(sword) ){
+			return false;  // No need to attach NBT to an item that already has it
 		}
 
 		NBTTagCompound compound = new NBTTagCompound();
@@ -86,16 +87,22 @@ public final class SwordNBTHelper {
 				(sword.hasTagCompound())? sword.getTagCompound().copy(): new NBTTagCompound();
 		baseCompound.setTag(SwordStat.MODID, compound);
 		sword.setTagCompound(baseCompound);
+		return true;
 	}
 	
-	public void incNBTData( ItemStack sword, Class<? extends Entity> entityClass )  
-				throws IllegalArgumentException {
+	/**
+	 * Increment the number of kills for the specified entity for the specified sword.
+	 * 
+	 * @param sword the sword to increment kills for 
+	 * @param entityClass the class of the entity that was killed
+	 * @return true if incrementation was successful, false otherwise
+	 */
+	public boolean incKillsForEntity( ItemStack sword, Class<? extends Entity> entityClass ) {
 		
-		if ( ! itemStackValidCheck(sword) ){
-			throw new IllegalArgumentException("Invalid itemstack!");
+		if ( !isSwordStatNBTAttached(sword) ){
+			return false;
 		}
 		
-		// Get NBT and edit it.
 		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(SwordStat.MODID);
 		int[] kills = tag.getIntArray(SwordDataEnum.ENTITY_KILLS_ARRAY.toString());
 		NBTTagList tagList = tag.getTagList(SwordDataEnum.ENTITY_NAMES_ARRAY.toString(),
@@ -119,37 +126,56 @@ public final class SwordNBTHelper {
 			}
 		}
 		tag.setIntArray(SwordDataEnum.ENTITY_KILLS_ARRAY.toString(), kills);
+		return true;
 	}
 	
-	public void incNBTData( ItemStack sword, SwordDataEnum data ) 
-		throws IllegalArgumentException {
+	/**
+	 * Increment total kills of a sword.
+	 * 
+	 * @param sword the sword whose total kills are to be incremented
+	 * @return true if kills were incremented correctly false otherwise
+	 */
+	public boolean incTotalKills( ItemStack sword ) {
 		
-		if ( ! itemStackValidCheck(sword) ){
-			throw new IllegalArgumentException("Invalid itemstack!");
+		if ( !isSwordStatNBTAttached(sword) ){
+			return false;
 		}
-		SwordDataEnum[] validData = {
-				SwordDataEnum.TOTAL_KILLS,
-				SwordDataEnum.PLAYER_KILLS
-		}; boolean valid = false;
-		for ( SwordDataEnum swordData : validData ){
-			if ( swordData.equals(data) ){
-				valid = true; break;
-			}
-		}
-		// Get NBT and edit it.
 		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(SwordStat.MODID);
-		int kills = tag.getInteger(data.toString());
-		kills++;
-		tag.setInteger(data.toString(), kills);
+		int kills = tag.getInteger(SwordDataEnum.TOTAL_KILLS.toString());
+		tag.setInteger(SwordDataEnum.TOTAL_KILLS.toString(), kills + 1);
+		return true;
 	}
 	
-	public void updateNBTData( ItemStack sword, World world )
-			throws IllegalArgumentException {
+	/**
+	 * Increment total player kills of a sword.
+	 * 
+	 * @param sword the sword whose total player kills are to be incremented
+	 * @return true if kills were incremented correctly false otherwise
+	 */
+	public boolean incPlayerKills( ItemStack sword ) {
+		
+		if ( !isSwordStatNBTAttached(sword) ){
+			return false;
+		}
+		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(SwordStat.MODID);
+		int kills = tag.getInteger(SwordDataEnum.PLAYER_KILLS.toString());
+		tag.setInteger(SwordDataEnum.PLAYER_KILLS.toString(), kills + 1);
+		return true;
+	}	
+	
+	/**
+	 * Update NBT data attached to a sword so that newly added mobs (added by new mods)
+	 * do not mix up NBT data currently stored on swords.
+	 * 
+	 * @param sword sword to update
+	 * @param world world object required
+	 * @return true if NBT data was attached successfully, false otherwise
+	 */
+	public boolean updateNBTData( ItemStack sword, World world ) {
 		
 		// mappings have the current updated list of mobs.
-
-		if ( ! itemStackValidCheck(sword) ){
-			throw new IllegalArgumentException("Invalid itemstack!");
+		if ( !isSwordStatNBTAttached(sword) ){
+			return false;
 		}
 		
 		NBTTagCompound tag = sword.getTagCompound().getCompoundTag(SwordStat.MODID);
@@ -166,18 +192,21 @@ public final class SwordNBTHelper {
 				SwordDataEnum.ENTITY_KILLS_ARRAY.toString(),
 				updatedArray(entityStringToClassMapping, entityNamesTagList, entityKills)
 		);
+		return true;
 	}
 	
-	private boolean itemStackValidCheck( ItemStack itemStack ) {
+	/**
+	 * Return true if sword has the Sword Stat NBT sub-compound attached to it.
+	 * 
+	 * @param itemStack the item stack to check
+	 * @return true if the sword has the sub-compound attached, false otherwise
+	 */
+	public boolean isSwordStatNBTAttached( ItemStack itemStack ) {
 		
-		// Mindf@ck
-		if ( 
-				! (itemStack.hasTagCompound() &&
-				itemStack.getTagCompound().hasKey(SwordStat.MODID)) 
-		){
-			return false;
+		if ( itemStack.hasTagCompound() && itemStack.getTagCompound().hasKey(SwordStat.MODID) ){ 
+			return true;
 		}
-		return true;
+		return false;
 		
 	}
 	

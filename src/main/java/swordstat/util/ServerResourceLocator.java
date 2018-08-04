@@ -1,16 +1,16 @@
 package swordstat.util;
 
-import swordstat.util.swordutil.SwordNBTHelper;
+import swordstat.swordinfo.SwordNBTAttacher;
 
 public final class ServerResourceLocator extends SwordStatResourceLocator {
 	
-	private SwordNBTHelper swordNBTHelper = null;
+	private SwordNBTAttacher swordNBTAttacher = null;
 	
-	public SwordNBTHelper getSwordNBTHelper() {
+	public SwordNBTAttacher getSwordNBTHelper() {
 		
-		if ( swordNBTHelper == null ){
-			swordNBTHelper = new SwordNBTHelper(getEntitySorting());
+		if ( swordNBTAttacher == null ){
+			swordNBTAttacher = new SwordNBTAttacher(getEntitySorting());
 		}
-		return swordNBTHelper;
+		return swordNBTAttacher;
 	}
 }
