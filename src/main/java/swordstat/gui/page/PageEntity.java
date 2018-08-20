@@ -12,6 +12,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.client.config.GuiCheckBox;
 import swordstat.SwordStat;
 import swordstat.gui.GuiEntityScrollingList;
 import swordstat.gui.GuiEntityScrollingList.EntityClassComparator;
@@ -30,6 +31,8 @@ public class PageEntity extends AbstractGuiSwordPage {
 	private GuiEntityScrollingList entityScrollingList;
 	// static for convenience
 	private static EntityType activeEntityType = EntityType.MONSTER;
+	
+	private GuiCheckBox bossCheckBox, monsterCheckBox, passiveCheckBox;
 	/**
 	 * Enumeration of entity types used by this page.
 	 */
@@ -115,7 +118,6 @@ public class PageEntity extends AbstractGuiSwordPage {
 	public ItemStack getIconItemStack() {
 
 		if ( SwordStat.CLIENT_RESOURCE_LOCATOR.getModItemStackIconFromModID(modID) == null ){
-			System.out.println("Found null!");
 			return new ItemStack(Items.BAKED_POTATO);
 		}
 		return SwordStat.CLIENT_RESOURCE_LOCATOR.getModItemStackIconFromModID(modID);
@@ -127,27 +129,26 @@ public class PageEntity extends AbstractGuiSwordPage {
 		super.recreateButtons(buttonStartIndex);
 		final int buttonHeight = 20;
 		final int monsterWidth = 60, bossWidth = 50, passiveWidth = 35, showAllWidth = 60;
-		final int xOffset = 9, yOffset = 7;//GuiSwordParent.Y_SIZE - buttonHeight - 5;
+		final int xOffset = 9, yOffset = 10;//GuiSwordParent.Y_SIZE - buttonHeight - 5;
 		final int spacing = 3;
 
-		// TODO draw shape around currently selected menu
-		getButtons().add(new GuiButton(
+		getButtons().add(monsterCheckBox = new GuiCheckBox(
 				buttonStartIndex,
 				getScreenWidth() / 2 - getParentWidth() / 2 + xOffset,
 				getScreenHeight() / 2 - getParentHeight() / 2 + yOffset,
-				monsterWidth, buttonHeight, "Monsters"
+				"Monsters", true
 		));
-		getButtons().add(new GuiButton(
+		getButtons().add(bossCheckBox = new GuiCheckBox(
 				buttonStartIndex + 1,
 				getScreenWidth() / 2 - getParentWidth() / 2 + monsterWidth + xOffset + spacing,
 				getScreenHeight() / 2 - getParentHeight() / 2 + yOffset,
-				bossWidth, buttonHeight, "Bosses"
+				"Bosses", false
 		));
-		getButtons().add(new GuiButton(
+		getButtons().add(passiveCheckBox = new GuiCheckBox(
 				buttonStartIndex + 2,
 				getScreenWidth() / 2 - getParentWidth() / 2 + monsterWidth + bossWidth + xOffset + spacing * 2,
 				getScreenHeight() / 2 - getParentHeight() / 2 + yOffset,
-				passiveWidth, buttonHeight, "Misc"
+				"Misc", false
 		));
 		getButtons().add(new GuiButton(
 				buttonStartIndex + 3,
@@ -155,6 +156,22 @@ public class PageEntity extends AbstractGuiSwordPage {
 				(getScreenHeight() / 2 + getParentHeight() / 2 - 25),
 				showAllWidth, buttonHeight, "Show: " + (( GuiEntityScrollingList.getUseFiltered() )? "kills" : "all") 
 		));
+		
+		if ( activeEntityType.equals(EntityType.MONSTER) ){
+			monsterCheckBox.setIsChecked(true);
+			bossCheckBox.setIsChecked(false);
+			passiveCheckBox.setIsChecked(false);
+		}
+		else if ( activeEntityType.equals(EntityType.BOSS) ){
+			monsterCheckBox.setIsChecked(false);
+			bossCheckBox.setIsChecked(true);
+			passiveCheckBox.setIsChecked(false);			
+		}
+		else {
+			monsterCheckBox.setIsChecked(false);
+			bossCheckBox.setIsChecked(false);
+			passiveCheckBox.setIsChecked(true);			
+		}
 		return getButtons();
 	}
 	
@@ -193,14 +210,23 @@ public class PageEntity extends AbstractGuiSwordPage {
 		if ( index == 0 ){
 			// It's the monster button
 			setCurrentEntityType(EntityType.MONSTER);
+			monsterCheckBox.setIsChecked(true);
+			bossCheckBox.setIsChecked(false);
+			passiveCheckBox.setIsChecked(false);
 		}
 		else if ( index == 1 ){
 			// It's the boss button
 			setCurrentEntityType(EntityType.BOSS);
+			monsterCheckBox.setIsChecked(false);
+			bossCheckBox.setIsChecked(true);
+			passiveCheckBox.setIsChecked(false);			
 		}
 		else if ( index == 2 ){
 			// It's the passive button 
 			setCurrentEntityType(EntityType.PASSIVE);
+			monsterCheckBox.setIsChecked(false);
+			bossCheckBox.setIsChecked(false);
+			passiveCheckBox.setIsChecked(true);			
 		}
 		else if ( index == 3 ){
 			// The show all / only kills button has been toggled

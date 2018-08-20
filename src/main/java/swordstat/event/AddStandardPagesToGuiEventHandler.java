@@ -1,21 +1,22 @@
 package swordstat.event;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.Multimap;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import swordstat.SwordStat;
 import swordstat.gui.page.ISwordPages;
 import swordstat.gui.page.PageEntity;
 import swordstat.gui.page.PageSword;
 import swordstat.swordinfo.SwordData;
 import swordstat.swordinfo.SwordKillsData;
-
-import com.google.common.collect.Multimap;
 
 public class AddStandardPagesToGuiEventHandler {
 
@@ -37,6 +38,28 @@ public class AddStandardPagesToGuiEventHandler {
 		ISwordPages pages = event.getSwordPages();
 		// Initialise all of the pages which correspond to tabs
 		pages.appendPage(new PageSword(swordDataHelper));
+		
+		// All entities
+		pages.appendPage(new PageEntity(
+				"All Entities",
+				ForgeRegistries.ENTITIES.getValuesCollection()
+				.stream().map(c -> c.getEntityClass())
+				.collect(Collectors.toList()),
+				event.getEntitySorting(), swordKillsData){
+				
+			@Override
+			public ItemStack getIconItemStack() {
+			
+				return new ItemStack(Items.BOOK);
+			}
+			
+			@Override
+			public String getTitleString() {
+				
+				return "All Entities";
+			}
+		});
+		
 		// Add the vanilla tab
 		pages.appendPage(new PageEntity(
 				"Minecraft", modIDToEntityClassMapping.get("Minecraft"),
@@ -55,6 +78,8 @@ public class AddStandardPagesToGuiEventHandler {
 				return "Vanilla";
 			}
 		});
+		
+		// Rest of mods
 		for ( String modID: modIDToEntityClassMapping.keySet() ){
 			if ( modID.equals("Minecraft") ){
 				continue;
