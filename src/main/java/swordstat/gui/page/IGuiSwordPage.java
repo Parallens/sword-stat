@@ -5,11 +5,14 @@ import java.util.List;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
-
+ 
+/**
+ * Represents a 'page' in the sword stat GUI. 
+ */
 public interface IGuiSwordPage {
 
 	/**
-	 * Get ItemStack to render on this pages tab.
+	 * Get ItemStack to render on this page's tab.
 	 * 
 	 * @return item stack to render on this page's tab
 	 */
@@ -22,10 +25,26 @@ public interface IGuiSwordPage {
 	 */
 	void actionPerformed( GuiButton button );
 	
-	// Analogous to initGui()
+	/**
+	 * Analogous to initGui() in GuiScreen classes, and is called under the same
+	 * circumstances.
+	 *  
+	 * @param screenWidth
+	 * @param screenHeight
+	 * @param parentWidth
+	 * @param parentHeight
+	 */
 	void onResize( int screenWidth, int screenHeight, int parentWidth, int parentHeight );
 	
-	// Analogous to drawScreen()
+	/**
+	 * Analogous to drawScreen() in GuiScreen classes, and is called under the same
+	 * circumstances.
+	 * 
+	 * @param parent
+	 * @param mouseX
+	 * @param mouseY
+	 * @param partialTicks
+	 */
 	void drawContents( GuiScreen parent, int mouseX, int mouseY, float partialTicks );
 	
 	/**
