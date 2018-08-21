@@ -20,6 +20,9 @@ import swordstat.init.EntitySorter.EntitySorting;
 import swordstat.swordinfo.SwordKillsData;
 import swordstat.util.SwordStatResourceLocator;
 
+/**
+ * Shows a page of kills sorted by entities, split into passives, bosses and monsters.
+ */
 public class PageEntity extends AbstractGuiSwordPage {
 	
 	private final String modID;

@@ -15,6 +15,9 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
+/**
+ * Page displaysing information about the sword.
+ */
 public class PageSword extends AbstractGuiSwordPage {
 	
 	// x = 12, y = 37
